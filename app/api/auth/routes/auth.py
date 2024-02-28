@@ -19,8 +19,3 @@ async def login(wallet_address):
 async def register(user_data: User):
     logger.info("Register endpoint accessed.")
     return await auth.register(user_data)
-
-# @router.get("/logout", response_model=StandardResponse)
-# async def logout():
-#     logger.info("Logout endpoint accessed.")
-#     return await auth.logout()
