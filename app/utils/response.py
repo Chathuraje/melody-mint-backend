@@ -2,6 +2,7 @@ from pydantic import BaseModel, root_validator, Field
 from typing import Generic, Optional, TypeVar
 import json
 
+# Standard Response Model (Code, Response, Data)
 T = TypeVar('T')
 
 def get_error_message(code: int) -> str:
@@ -11,7 +12,6 @@ def get_error_message(code: int) -> str:
         return error_codes.get(str(code), "Unknown error")
     except Exception as e:
         return "Unknown error"
-
 class StandardResponse(BaseModel, Generic[T]):
     code: int = Field(..., description="Status code of the response")
     response: Optional[str] = Field(None, description="Message accompanying the status code")
@@ -23,9 +23,13 @@ class StandardResponse(BaseModel, Generic[T]):
         if message is None and code is not None:
             values['response'] = get_error_message(code)
         return values
-    
+# End of Standard Response Model
+
+  
+# Read Log Response Model (StandardResponse -> Data)
 class LogContent(BaseModel):
     logs: Optional[list[str]] = Field(None, description="List of log lines")
-
+    
 class ReadLogResponse(StandardResponse[LogContent]):
     pass
+# End of Log Response Model
