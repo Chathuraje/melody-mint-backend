@@ -9,12 +9,8 @@ setup_logger()
 logger = get_logger()
 
 
-# SECTION: FastAPI Root
-async def read_root() -> StandardResponse:
-    return StandardResponse(code=200, data="Hello, this is your FastAPI application!")
-
 # SECTION: FastAPI Logs
-async def _read_log(limit) ->  ReadLogResponse:
+async def read_log(limit) -> ReadLogResponse:
     try:
         async with aiofiles.open("melodymint.log", "r") as log_file:
             if limit is None or limit < 0:
@@ -32,8 +28,3 @@ async def _read_log(limit) ->  ReadLogResponse:
         tb = traceback.format_exc()
         logger.error(f"Error while reading log file: {e}\nTraceback: {tb}")
         raise HTTPException(status_code=500, detail=f"Error while reading log file: {e}\nTraceback: {tb}") from e
-
-async def read_log(limit) -> ReadLogResponse:
-    log_content = await _read_log(limit)
-
-    return ReadLogResponse(code=200, data=log_content)

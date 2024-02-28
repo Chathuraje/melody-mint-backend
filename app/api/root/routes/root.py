@@ -13,9 +13,11 @@ router = APIRouter()
 @router.get("/", response_model=StandardResponse)
 async def read_root():
     logger.info("Root endpoint accessed.")
-    return await root.read_root()
+    return StandardResponse(code=200, data="Hello, this is your FastAPI application!")
 
 @router.get("/read-log", response_model=ReadLogResponse)
 async def read_log(limit: int = None):
     logger.info("Read log endpoint accessed.")
-    return await root.read_log(limit)
+    log_content = await root.read_log(limit)
+    
+    return ReadLogResponse(code=200, data=log_content)
