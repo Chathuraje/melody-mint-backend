@@ -18,6 +18,5 @@ async def read_root():
 @router.get("/read-log", response_model=ReadLogResponse)
 async def read_log(limit: int = None):
     logger.info("Read log endpoint accessed.")
-    log_content = await root.read_log(limit)
     
-    return ReadLogResponse(code=200, data=log_content)
+    return await root.read_log(limit)

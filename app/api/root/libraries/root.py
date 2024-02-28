@@ -19,7 +19,7 @@ async def read_log(limit) -> ReadLogResponse:
                 log_content = deque(await log_file.readlines(), maxlen=limit)
                 log_content = list(log_content)
                 
-        return LogContent(logs=log_content)
+        return ReadLogResponse(code=200, data=LogContent(logs=log_content))
 
     except FileNotFoundError as e:
         logger.error(f"Log file not found: {e}")
