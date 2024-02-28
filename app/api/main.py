@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.api.root.routes.main import router as root_routers
+from app.api.root.main import router as root_routers
 
 router = APIRouter(
     prefix="/api"
