@@ -1,8 +1,8 @@
 from fastapi import APIRouter
-from app.api.root.routes.root import routers as root_routers
+from app.api.root.routes.root import router as root_routers
 
-routers = APIRouter(
+router = APIRouter(
     tags=["Root"]
 )
 
-routers.include_router(root_routers)
+router.include_router(root_routers)
