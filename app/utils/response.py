@@ -2,7 +2,7 @@ from pydantic import BaseModel, root_validator, Field
 from typing import Generic, Optional, TypeVar
 import json
 from app.models.Base import LogContent
-from app.models.Users import ExistingUser
+from app.models.Users import ExistingUser, User, UserReturn
 
 # Standard Response Model (Code, Response, Data)
 T = TypeVar('T')
@@ -37,10 +37,20 @@ class ReadLogResponse(StandardResponse[LogContent]):
 # User Login Response Model (StandardResponse -> Data)
 class UserLoginResponse(StandardResponse[ExistingUser]):
     pass
-# User End of User Login Response Model
+# End of User Login Response Model
 
 
 # User Register Response Model (StandardResponse -> Data)
 class UserRegisterResponse(StandardResponse[ExistingUser]):
     pass
-# User End of Register Response Model
+#End of User Register Response Model
+
+# Individual User Response Model (StandardResponse -> Data)
+class IndividualUserResponse(StandardResponse[User]):
+    pass
+# End of User Register Response Model
+
+# All Users Response Model (StandardResponse -> Data)
+class AllUsersResponse(StandardResponse[list[UserReturn]]):
+    pass
+# End of All Users Response Model
