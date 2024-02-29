@@ -1,0 +1,15 @@
+[Unit]
+Description=MelodyMint FastAPI Application
+After=network.target
+
+[Service]
+User=chathura
+Group=chathura
+WorkingDirectory=/home/chathura/MelodyMint/Backend/production/_work/MelodyMint/Backend/MelodyMint/Backend/
+Environment="PATH=/home/chathura/MelodyMint/Backend/production/_work/MelodyMint/Backend/MelodyMint/Backend/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/home/chathura/MelodyMint/Backend/production/_work/MelodyMint/Backend/MelodyMint/Backend/.venv/bin/python3 /home/chathura/MelodyMint/Backend/production/_work/MelodyMint/Backend/MelodyMint/Backend/main.py
+
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
