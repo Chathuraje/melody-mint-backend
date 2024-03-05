@@ -54,3 +54,23 @@ async def get_all_users() -> AllUsersResponse:
         data=individual_user_responses
     )
 # SECTION: End of FastAPI All Users List
+
+
+# SECTION: FastAPI Individual User Routes -> Update
+async def update_user(user_id: str, user: User) -> IndividualUserResponse:
+    user_id_obj = ObjectId(user_id)
+    user_data = user.dict()
+    result = user_collection.update_one({"_id": user_id_obj}, {"$set": user_data})
+    if result.modified_count > 0:
+        return IndividualUserResponse(
+            code=200,
+            response="User updated successfully",
+            data=user
+        )
+    else:
+        return IndividualUserResponse(
+            code=404,
+            response="User not found",
+            data=None
+        )
+# SECTION: End of FastAPI Individual User Routes -> Update
