@@ -3,7 +3,7 @@ from typing import Generic, Optional, TypeVar
 import json
 from app.models.Base import LogContent
 from app.models.Users import ExistingUser, User, UserReturn
-from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew
+from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew, InvestCampaign
 
 # Standard Response Model (Code, Response, Data)
 T = TypeVar('T')
@@ -72,3 +72,9 @@ class SingleCampaignResponse(StandardResponse[Campaigns]):
 class AllCampaignResponse(StandardResponse[list[CampaignsReturn]]):
     pass
 # End of All Campaigns Response Model
+
+
+# Investment Response Model (StandardResponse -> Data)
+class InvestmentResponse(StandardResponse[InvestCampaign]):
+    pass
+# End of Investment Response Model

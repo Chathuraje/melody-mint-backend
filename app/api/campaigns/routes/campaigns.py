@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from app.utils.logging import get_logger
 from app.api.campaigns.libraries import campaigns
-from app.utils.response import CampaignCreateResponse, SingleCampaignResponse, AllCampaignResponse
-from app.models.Campaigns import Campaigns
+from app.utils.response import CampaignCreateResponse, SingleCampaignResponse, AllCampaignResponse, InvestmentResponse
+from app.models.Campaigns import Campaigns, InvestCampaign
 
 
 router = APIRouter()
@@ -27,9 +27,17 @@ async def get_campaign(campaign_id: str):
     return user
 
 @router.put("/{campaign_id}", response_model=SingleCampaignResponse)
-async def update_campaign(campaign_id: str, user: Campaigns):
-    logger.info(f"Updating campaigns details with ID: {campaign_id}")
-    updated_user = await campaigns.update_campaign(campaign_id, user)
-    if updated_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return updated_user
+async def update_campaign(campaign_id: str, campaign: Campaigns):
+    logger.info(f"Updating campaign with ID: {campaign_id}")
+    updated_campaign = await campaigns.update_campaign(campaign_id, campaign)
+    if updated_campaign is None:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    return updated_campaign
+
+@router.put("/{campaign_id}/invest", response_model=InvestmentResponse)
+async def update_campaign(campaign_id: str, investment_details: InvestCampaign):
+    logger.info(f"Investing in campaign with ID: {campaign_id}")
+    updated_campaign = await campaigns.invest_campaign(campaign_id, investment_details)
+    if updated_campaign is None:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    return updated_campaign

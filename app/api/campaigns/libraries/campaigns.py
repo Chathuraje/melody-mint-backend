@@ -1,14 +1,14 @@
-from app.utils.response import CampaignCreateResponse, SingleCampaignResponse, AllCampaignResponse
+from app.utils.response import CampaignCreateResponse, SingleCampaignResponse, AllCampaignResponse, InvestmentResponse
 from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew
-from app.utils.database import user_collection
+from app.utils.database import user_collection, campaign_collection
 from bson import ObjectId
-from app.models.Campaigns import Campaigns
+from app.models.Campaigns import Campaigns, InvestCampaign
 
 
 # SECTION: FastAPI Create a new campaign
 async def create_campaign(campaign: Campaigns) -> CampaignsNew:
     campaign_data = campaign.dict()
-    result = user_collection.insert_one(campaign_data)
+    result = campaign_collection.insert_one(campaign_data)
     if result.inserted_id:
         return CampaignCreateResponse(
             code=200,
@@ -27,7 +27,7 @@ async def create_campaign(campaign: Campaigns) -> CampaignsNew:
 
 # SECTION: Get Fastapi all campaigns
 async def get_all_campaigns():
-    campaigns = user_collection.find()
+    campaigns = campaign_collection.find()
     individual_campaign_responses = []
     for campaign_data in campaigns:
         campaign_id = str(campaign_data['_id'])
@@ -65,7 +65,7 @@ async def get_all_campaigns():
 
 # SECTION: Get Single Campaign from Campaign id
 async def get_campaign(campaign_id: str) -> SingleCampaignResponse:
-    campaign_data = user_collection.find_one({"_id": ObjectId(campaign_id)})
+    campaign_data = campaign_collection.find_one({"_id": ObjectId(campaign_id)})
     if campaign_data:
         campaign = CampaignsReturn(
             id=str(campaign_data['_id']),
@@ -105,14 +105,78 @@ async def get_campaign(campaign_id: str) -> SingleCampaignResponse:
 
 # SECTION: Update Campaign from Campaign id
 async def update_campaign(campaign_id: str, campaign: Campaigns) -> SingleCampaignResponse:
+    campaign_id_obj = ObjectId(campaign_id)
     campaign_data = campaign.dict()
-    result = user_collection.update_one({"_id": ObjectId(campaign_id)}, {"$set": campaign_data})
+    result = campaign_collection.update_one({"_id": ObjectId(campaign_id_obj)}, {"$set": campaign_data})
     if result.modified_count == 1:
-        return await get_campaign(campaign_id)
+        return SingleCampaignResponse(
+            code=200,
+            response="Campaign Updated",
+            data=campaign_data
+        )
     else:
         return SingleCampaignResponse(
+            code=404,
+            response="Campaign not Updated",
+            data=None
+        )
+# SECTION: End of Update Campaign from Campaign id
+
+
+
+# SECTION: Invest to the Campaign
+async def invest_campaign(campaign_id: str, investment_details: InvestCampaign) -> InvestmentResponse:
+    campaign_data = campaign_collection.find_one({"_id": ObjectId(campaign_id)})
+    if campaign_data:
+        current_amount = int(campaign_data.get('current_amount'))
+        
+        invester_id = str(investment_details.invester_id)
+        amount = int(investment_details.amount)
+        
+        if current_amount is None:
+            current_amount = 0
+        current_amount += amount
+        
+        user_id_obj = ObjectId(invester_id)
+        user_data = user_collection.find_one({"_id": ObjectId(user_id_obj)})  
+       
+        if user_data:
+            investers_list = campaign_data.get('investers_list')
+            investment_amount = campaign_data.get('investment_amount')
+            
+            if invester_id in investers_list:
+                # Update investment amount for existing investor
+                index = investers_list.index(invester_id)
+                investment_amount[index] += amount
+            else:
+                # Append new investor and investment amount
+                investers_list.append(invester_id)
+                investment_amount.append(amount)
+            
+            campaign_id_obj = ObjectId(campaign_id)
+            result = campaign_collection.update_one({"_id": ObjectId(campaign_id_obj)}, {"$set": {"current_amount": current_amount, "investers_list": investers_list, "investment_amount": investment_amount}})
+            if result.modified_count == 1:
+                return InvestmentResponse(
+                    code=200,
+                    response="Investment Successful",
+                    data=None
+                )
+            else:
+                return InvestmentResponse(
+                    code=404,
+                    response="Investment not Updated",
+                    data=None
+                )
+        else:
+            return InvestmentResponse(
+                code=404,
+                response="User not found",
+                data=None
+            )
+    else:
+        return InvestmentResponse(
             code=404,
             response="Campaign not found",
             data=None
         )
-# SECTION: End of Update Campaign from Campaign id
+# SECTION: End of Invest to the Campaign
