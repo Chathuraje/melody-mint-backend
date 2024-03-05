@@ -21,6 +21,8 @@ class Profile(BaseModel):
     last_name: Optional[str] = Field(..., description="Last name of the user")
     email: Optional[str] = Field(..., description="Email of the user")
     contact_no: Optional[str] = Field(..., description="Contact number of the user")
+    country: Optional[str] = Field(..., description="Country of the user")
+    state: Optional[str] = Field(..., description="State of the user")
     profile_picture: Optional[str] = Field(..., description="Profile picture of the user")
 
 class User(BaseModel):
