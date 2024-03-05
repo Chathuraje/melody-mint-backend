@@ -4,6 +4,7 @@ import json
 from app.models.Base import LogContent
 from app.models.Users import ExistingUser, User, UserReturn
 from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew, InvestCampaign
+from app.models.MusicIdentifier import Music, MusicNew
 
 # Standard Response Model (Code, Response, Data)
 T = TypeVar('T')
@@ -78,3 +79,13 @@ class AllCampaignResponse(StandardResponse[list[CampaignsReturn]]):
 class InvestmentResponse(StandardResponse[InvestCampaign]):
     pass
 # End of Investment Response Model
+
+# Music Music Train Response Model (StandardResponse -> Data)
+class MusicTrainResponse(StandardResponse[MusicNew]):
+    pass
+# End of Music Train Response Model
+
+# Music Identifier Response Model (StandardResponse -> Data)
+class MusicIdentifierResponse(StandardResponse[Music]):
+    pass
+# End of Music Identifier Response Model
