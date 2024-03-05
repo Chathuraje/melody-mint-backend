@@ -3,6 +3,7 @@ from typing import Generic, Optional, TypeVar
 import json
 from app.models.Base import LogContent
 from app.models.Users import ExistingUser, User, UserReturn
+from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew
 
 # Standard Response Model (Code, Response, Data)
 T = TypeVar('T')
@@ -54,3 +55,20 @@ class IndividualUserResponse(StandardResponse[User]):
 class AllUsersResponse(StandardResponse[list[UserReturn]]):
     pass
 # End of All Users Response Model
+
+
+
+# Campaign Create Response Model (StandardResponse -> Data)
+class CampaignCreateResponse(StandardResponse[CampaignsNew]):
+    pass
+#End of Campaign Create Response Model
+
+# Single Campaign Response Model (StandardResponse -> Data)
+class SingleCampaignResponse(StandardResponse[Campaigns]):
+    pass
+# End of Single Campaign Response Model
+
+# All Campaigns Response Model (StandardResponse -> Data)
+class AllCampaignResponse(StandardResponse[list[CampaignsReturn]]):
+    pass
+# End of All Campaigns Response Model
