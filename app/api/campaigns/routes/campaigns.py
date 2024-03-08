@@ -41,7 +41,7 @@ async def update_campaign(campaign_id: str, campaign: Campaigns):
     return updated_campaign
 
 @router.put("/{campaign_id}/invest", response_model=InvestmentResponse)
-async def update_campaign(campaign_id: str, investment_details: InvestCampaign):
+async def invest_campaign(campaign_id: str, investment_details: InvestCampaign):
     logger.info(f"Investing in campaign with ID: {campaign_id}")
     updated_campaign = await campaigns.invest_campaign(campaign_id, investment_details)
     if updated_campaign is None:
