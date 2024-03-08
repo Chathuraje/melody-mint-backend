@@ -3,7 +3,7 @@ from app.models.Users import User, ExistingUser
 from app.utils.logging import setup_logger, get_logger
 from app.utils.database import user_collection
 from fastapi import HTTPException
-
+from app.utils.auth import jwt_handler
 
 setup_logger()
 logger = get_logger()
@@ -35,6 +35,9 @@ async def register(user_data: User) -> UserRegisterResponse:
             response="User already exists",
             data=ExistingUser(id=None)
         )
+    
+    hashed_password = jwt_handler.pwd_context.hash(user_data.hash_password)
+    user_data.hash_password = hashed_password
     
     user_dict = user_data.dict()
     

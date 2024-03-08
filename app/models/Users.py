@@ -27,6 +27,7 @@ class Profile(BaseModel):
 
 class User(BaseModel):
     wallet_address: Optional[str] = Field(..., description="Wallet address of the user")
+    hash_password: Optional[str] = Field(..., description="Hashed password of the user")
     username: Optional[str] = Field(..., description="Username of the user")
     profile: Optional[Profile] = Field(None, description="Profile of the user")
     is_artist: Optional[bool] = Field(False, description="Indicates if the user is an artist")
