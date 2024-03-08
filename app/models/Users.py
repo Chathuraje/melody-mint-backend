@@ -39,6 +39,15 @@ class ExistingUser(BaseModel):
 class UserReturn(User):
     id: Optional[str] = Field(..., description="Unique ID of the user")
 
+# class Token(BaseModel):
+#     access_token: str
+#     token_type: str
+    
+# class TokenData(BaseModel):
+#     wallet_address: str = None
+    
+# class UserInDB(User):
+#     hash_password: str
 
     
 
