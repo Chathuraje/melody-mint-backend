@@ -9,11 +9,11 @@ logger = get_logger()
 
 router = APIRouter()
 
-@router.get("/login/{wallet_address}", response_model=UserLoginResponse)
-async def login(wallet_address):
+@router.post("/login", response_model=UserLoginResponse)
+async def login(wallet_address: str, password: str):
     logger.info("Login endpoint accessed.")
     
-    return await auth.login(wallet_address)
+    return await auth.login(wallet_address, password)
 
 @router.post("/register", response_model=UserRegisterResponse)
 async def register(user_data: User):
