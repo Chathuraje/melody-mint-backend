@@ -132,6 +132,7 @@ async def invest_campaign(campaign_id: str, investment_details: InvestCampaign) 
         
         invester_id = str(investment_details.invester_id)
         amount = int(investment_details.amount)
+        date = str(investment_details.date)
         
         if current_amount is None:
             current_amount = 0
@@ -143,18 +144,23 @@ async def invest_campaign(campaign_id: str, investment_details: InvestCampaign) 
         if user_data:
             investers_list = campaign_data.get('investers_list')
             investment_amount = campaign_data.get('investment_amount')
+            invested_date = campaign_data.get('invested_date')
             
-            if invester_id in investers_list:
-                # Update investment amount for existing investor
-                index = investers_list.index(invester_id)
-                investment_amount[index] += amount
-            else:
-                # Append new investor and investment amount
-                investers_list.append(invester_id)
-                investment_amount.append(amount)
+            # if invester_id in investers_list:
+            #     # Update investment amount for existing investor
+            #     index = investers_list.index(invester_id)
+            #     investment_amount[index] += amount
+            # else:
+            #     # Append new investor and investment amount
+            #     investers_list.append(invester_id)
+            #     investment_amount.append(amount)
+            
+            investers_list.append(invester_id)
+            investment_amount.append(amount)
+            invested_date.append(date)
             
             campaign_id_obj = ObjectId(campaign_id)
-            result = campaign_collection.update_one({"_id": ObjectId(campaign_id_obj)}, {"$set": {"current_amount": current_amount, "investers_list": investers_list, "investment_amount": investment_amount}})
+            result = campaign_collection.update_one({"_id": ObjectId(campaign_id_obj)}, {"$set": {"current_amount": current_amount, "investers_list": investers_list, "investment_amount": investment_amount, "invested_data": invested_data}})
             if result.modified_count == 1:
                 return InvestmentResponse(
                     code=200,

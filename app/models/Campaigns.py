@@ -21,6 +21,7 @@ class Campaigns(BaseModel):
     status: Optional[str] = Field(..., description="Status of the campaign")
     investers_list: Optional[list[str]] = Field(..., description="Investers list of the campaign")
     investment_amount: Optional[list[float]] = Field(..., description="Investment amount of the campaign")
+    invested_date: Optional[list[str]] = Field(..., description="Invested date of the campaign")
     
     
 class CampaignsReturn(Campaigns):
@@ -33,4 +34,5 @@ class CampaignsNew(BaseModel):
 class InvestCampaign(BaseModel):
     invester_id: Optional[str] = Field(..., description="Investers list of the campaign")
     amount: Optional[int] = Field(..., description="Investment amount of the campaign")
+    date: Optional[str] = Field(..., description="Invested data of the campaign")
     
