@@ -160,7 +160,7 @@ async def invest_campaign(campaign_id: str, investment_details: InvestCampaign) 
             invested_date.append(date)
             
             campaign_id_obj = ObjectId(campaign_id)
-            result = campaign_collection.update_one({"_id": ObjectId(campaign_id_obj)}, {"$set": {"current_amount": current_amount, "investers_list": investers_list, "investment_amount": investment_amount, "invested_data": invested_data}})
+            result = campaign_collection.update_one({"_id": ObjectId(campaign_id_obj)}, {"$set": {"current_amount": current_amount, "investers_list": investers_list, "investment_amount": investment_amount, "invested_data": invested_date}})
             if result.modified_count == 1:
                 return InvestmentResponse(
                     code=200,
