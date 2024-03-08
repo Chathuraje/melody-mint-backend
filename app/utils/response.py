@@ -48,7 +48,7 @@ class UserRegisterResponse(StandardResponse[UserReturnID]):
 #End of User Register Response Model
 
 # Individual User Response Model (StandardResponse -> Data)
-class IndividualUserResponse(StandardResponse[UserReturn]):
+class IndividualUserResponse(StandardResponse[User]):
     pass
 # End of User Register Response Model
 

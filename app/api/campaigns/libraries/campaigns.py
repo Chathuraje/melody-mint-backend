@@ -26,7 +26,7 @@ async def create_campaign(campaign: Campaigns) -> CampaignsNew:
 # SECTION: End of FastAPI Create a new campaign
 
 # SECTION: Get Fastapi all campaigns
-async def get_all_campaigns():
+async def get_all_campaigns() -> AllCampaignResponse:
     campaigns = campaign_collection.find()
     individual_campaign_responses = []
     for campaign_data in campaigns:
@@ -51,7 +51,8 @@ async def get_all_campaigns():
             is_completed=campaign_data.get('is_completed'),
             status=campaign_data.get('status'),
             investers_list=campaign_data.get('investers_list'),
-            investment_amount=campaign_data.get('investment_amount')
+            investment_amount=campaign_data.get('investment_amount'),
+            invested_date=campaign_data.get('invested_date')
         )
         individual_campaign_responses.append(campaign)
 
@@ -87,7 +88,8 @@ async def get_campaign(campaign_id: str) -> SingleCampaignResponse:
             is_completed=campaign_data.get('is_completed'),
             status=campaign_data.get('status'),
             investers_list=campaign_data.get('investers_list'),
-            investment_amount=campaign_data.get('investment_amount')
+            investment_amount=campaign_data.get('investment_amount'),
+            invested_date=campaign_data.get('invested_date')
         )
         return SingleCampaignResponse(
             code=200,
@@ -215,7 +217,8 @@ async def get_user_campaigns(user_id: str) -> AllCampaignResponse:
             is_completed=campaign_data.get('is_completed'),
             status=campaign_data.get('status'),
             investers_list=campaign_data.get('investers_list'),
-            investment_amount=campaign_data.get('investment_amount')
+            investment_amount=campaign_data.get('investment_amount'),
+            invested_date=campaign_data.get('invested_date')
         )
         individual_campaign_responses.append(campaign)
 
@@ -255,7 +258,8 @@ async def get_investments(user_id: str) -> AllCampaignResponse:
             is_completed=campaign_data.get('is_completed'),
             status=campaign_data.get('status'),
             investers_list=campaign_data.get('investers_list'),
-            investment_amount=campaign_data.get('investment_amount')
+            investment_amount=campaign_data.get('investment_amount'),
+            invested_date=campaign_data.get('invested_date')
         )
         individual_campaign_responses.append(campaign)
 

@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from app.utils.logging import setup_logger, get_logger
 from app.api.auth.libraries import auth
 from app.utils.response import UserRegisterResponse, UserLoginResponse
-from app.models.Users import UserInDB
+from app.models.Users import UserInDB, UserLogin
 
 setup_logger()
 logger = get_logger()
@@ -10,10 +10,10 @@ logger = get_logger()
 router = APIRouter()
 
 @router.post("/login", response_model=UserLoginResponse)
-async def login(wallet_address: str):
+async def login(user_data: UserLogin):
     logger.info("Login endpoint accessed.")
     
-    return await auth.login(wallet_address)
+    return await auth.login(user_data)
 
 @router.post("/register", response_model=UserRegisterResponse)
 async def register(user_data: UserInDB):

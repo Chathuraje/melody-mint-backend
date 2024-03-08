@@ -35,7 +35,10 @@ class UserInDB(User):
 
 class UserReturnID(BaseModel):
     id: Optional[str] = Field(..., description="Unique ID of the user")
-    
+
+class UserLogin(BaseModel):
+    wallet_address: Optional[str] = Field(..., description="Wallet address of the user")
+    password: Optional[str] = Field(..., description="Password of the user")
     
     
     

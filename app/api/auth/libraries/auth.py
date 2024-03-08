@@ -10,9 +10,19 @@ logger = get_logger()
 
 
 # SECTION: FastAPI Login Routes -> Login
-async def login(wallet_address: str) -> UserLoginResponse:
+async def login(user_data) -> UserLoginResponse:
+    wallet_address = user_data.wallet_address
+    password = user_data.password
+    
     user = user_collection.find_one({"wallet_address": wallet_address})
     if user:
+        if user.get("hash_password") != password:
+            return UserLoginResponse(
+                code=401,
+                response="Invalid Wallet Address or Password",
+                data=UserReturnID(id=None)
+            )
+        
         return UserLoginResponse(
             code=200,
             response="User Login Successfull",
@@ -42,7 +52,7 @@ async def register(user_data: UserInDB) -> UserRegisterResponse:
     user_id = str(result.inserted_id)
     
     return UserRegisterResponse(
-            code=400,
+            code=200,
             response="User Registered Successfully",
             data=UserReturnID(id=user_id)
         )
