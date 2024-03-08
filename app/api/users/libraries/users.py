@@ -1,5 +1,5 @@
 from app.utils.response import IndividualUserResponse, AllUsersResponse
-from app.models.Users import User, Profile, Artist, UserReturn
+from app.models.Users import User, Artist, UserReturn
 from app.utils.database import user_collection
 from bson import ObjectId
 
@@ -15,9 +15,15 @@ async def get_user(user_id: str) -> IndividualUserResponse:
             data=User(
                 wallet_address=user.get("wallet_address"),
                 username=user.get("username"),
-                profile=user.get("profile"),
+                first_name=user.get("first_name"),
+                last_name=user.get("last_name"),
+                email=user.get("email"),
+                contact_no=user.get("contact_no"),
+                country=user.get("country"),
+                state=user.get("state"),
+                profile_picture=user.get("profile_picture"),
                 is_artist=user.get("is_artist"),
-                artist_data=user.get("artist_data"),
+                artist_data=Artist(**user.get("artist_data")),
                 disabled=user.get("disabled")
             )
         )
@@ -37,13 +43,18 @@ async def get_all_users() -> AllUsersResponse:
     for user_data in users:
         user_id = str(user_data['_id'])
         user = UserReturn(
-            id=user_id,
-            wallet_address=user_data.get('wallet_address'),
-            username=user_data.get('username'),
-            profile=Profile(**user_data.get('profile')),
-            is_artist=user_data.get('is_artist'),
-            artist_data=Artist(**user_data.get('artist_data')),
-            disabled=user_data.get('disabled')
+            wallet_address=user.get("wallet_address"),
+            username=user.get("username"),
+            first_name=user.get("first_name"),
+            last_name=user.get("last_name"),
+            email=user.get("email"),
+            contact_no=user.get("contact_no"),
+            country=user.get("country"),
+            state=user.get("state"),
+            profile_picture=user.get("profile_picture"),
+            is_artist=user.get("is_artist"),
+            artist_data=Artist(**user.get("artist_data")),
+            disabled=user.get("disabled")
         )
         individual_user_responses.append(user)
 
