@@ -19,3 +19,8 @@ async def identify_uploaded_music(music: Music, file: UploadFile = File(...)):
 async def identify_uploaded_music(music: Music, file: UploadFile = File(...)):
     logger.info("Identifying music")
     return await music_identifier.identify_music(music, file)
+
+@router.get("/get_data", response_model=MusicTrainResponse)
+async def get_music_data(music: Music):
+    logger.info("Getting music data")
+    return await music_identifier.get_music_data(music)
