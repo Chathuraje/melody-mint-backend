@@ -40,5 +40,12 @@ class UserLogin(BaseModel):
     wallet_address: Optional[str] = Field(..., description="Wallet address of the user")
     password: Optional[str] = Field(..., description="Password of the user")
     
+class Token(BaseModel):
+    access_token: Optional[str] = Field(..., description="Access token of the user")
+    token_type: Optional[str] = Field(..., description="Token type of the user")
+
+class TokenData(BaseModel):
+    wallet_address: Optional[str] = Field(..., description="Wallet address of the user")
+    
     
     

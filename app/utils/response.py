@@ -2,7 +2,7 @@ from pydantic import BaseModel, root_validator, Field
 from typing import Generic, Optional, TypeVar
 import json
 from app.models.Base import LogContent
-from app.models.Users import User, UserReturn, UserReturnID
+from app.models.Users import User, UserReturn, UserReturnID, Token
 from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew, InvestCampaign
 from app.models.MusicIdentifier import Music, MusicNew
 
@@ -40,6 +40,11 @@ class ReadLogResponse(StandardResponse[LogContent]):
 class UserLoginResponse(StandardResponse[UserReturnID]):
     pass
 # End of User Login Response Model
+
+# Token Response Model (StandardResponse -> Data)
+class TokenResponse(StandardResponse[Token]):
+    pass
+# End of Token Response Model
 
 
 # User Register Response Model (StandardResponse -> Data)

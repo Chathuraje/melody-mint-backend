@@ -1,11 +1,17 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from app.utils.logging import get_logger
 from app.api.users.libraries import users
 from app.utils.response import IndividualUserResponse, AllUsersResponse
 from app.models.Users import User
+from app.utils.auth.auth import get_current_active_user
 
 router = APIRouter()
 logger = get_logger()
+
+# @router.get("/", response_model=AllUsersResponse)
+# async def get_all_users(current_user: User = Depends(get_current_active_user)):
+#     logger.info("Getting all users")
+#     return await users.get_all_users()
 
 @router.get("/", response_model=AllUsersResponse)
 async def get_all_users():

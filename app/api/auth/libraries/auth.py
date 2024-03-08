@@ -1,9 +1,9 @@
-from app.utils.response import UserLoginResponse, UserRegisterResponse
-from app.models.Users import UserInDB, UserReturnID, UserReturn
+from app.utils.response import UserLoginResponse, UserRegisterResponse, TokenResponse
+from app.models.Users import UserInDB, UserReturnID, UserReturn, Token
 from app.utils.logging import setup_logger, get_logger
 from app.utils.database import user_collection
 from fastapi import HTTPException
-
+from app.utils.auth import jwt
 
 setup_logger()
 logger = get_logger()
@@ -11,18 +11,16 @@ logger = get_logger()
 
 # SECTION: FastAPI Login Routes -> Login
 async def login(user_data) -> UserLoginResponse:
-    wallet_address = user_data.wallet_address
-    password = user_data.password
+    user = user_collection.find_one({"wallet_address": user_data.wallet_address})
+    if user is None:
+        return UserLoginResponse(
+            code=404,
+            response="User not found",
+            data=UserReturnID(id=None)
+        )
     
-    user = user_collection.find_one({"wallet_address": wallet_address})
+    user = jwt.authenticate_user(user_data.wallet_address, user_data.password)
     if user:
-        if user.get("hash_password") != password:
-            return UserLoginResponse(
-                code=401,
-                response="Invalid Wallet Address or Password",
-                data=UserReturnID(id=None)
-            )
-        
         return UserLoginResponse(
             code=200,
             response="User Login Successfull",
@@ -30,8 +28,8 @@ async def login(user_data) -> UserLoginResponse:
             )
     else:
         return UserLoginResponse(
-            code=404,
-            response="User not found",
+            code=401,
+            response="Invalid Password",
             data=UserReturnID(id=None)
         )
 # SECTION: End of FastAPI Login Routes -> Login
@@ -46,6 +44,7 @@ async def register(user_data: UserInDB) -> UserRegisterResponse:
             data=None
         )
     
+    user_data.hash_password = jwt.get_password_hash(user_data.hash_password)
     user_dict = user_data.dict()
     
     result = user_collection.insert_one(user_dict)
@@ -57,3 +56,33 @@ async def register(user_data: UserInDB) -> UserRegisterResponse:
             data=UserReturnID(id=user_id)
         )
 # SECTION: End of FastAPI Auth Routes -> Registration
+
+# SECTION: Access for Token Authentication
+async def login_for_access_token(form_data) -> Token:
+    user = user_collection.find_one({"wallet_address": form_data.username})
+    if user is None:
+        return TokenResponse(
+            code=401,
+            response="Invalid Username or Password",
+            data=None
+        )
+    
+    user = jwt.authenticate_user(form_data.username, form_data.password)
+    if user:
+        access_token_expires = jwt.ACCESS_TOKEN_EXPIRE_MINUTES
+        access_token = jwt.create_access_token(
+            data={"sub": user["wallet_address"]},
+            expires_delta=access_token_expires
+        )
+        return TokenResponse(
+            code=200,
+            response="Access Token Generated",
+            data=Token(access_token=access_token, token_type="bearer")
+        )
+    else:
+        return TokenResponse(
+            code=401,
+            response="Invalid Username or Password",
+            data=None
+        )
+# SECTION: End of Access for Token Authentication
