@@ -141,7 +141,8 @@ async def invest_campaign(campaign_id: str, investment_details: InvestCampaign) 
         
         # calculate own percentage after invest
         percentage = (investment_amount / target_amount) * 100
-        
+        percentage = round(percentage)
+
         if current_amount is None:
             current_amount = 0
         current_amount += amount
