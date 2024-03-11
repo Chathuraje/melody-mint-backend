@@ -103,11 +103,11 @@ class CollectionCreateResponse(StandardResponse[CollectionNew]):
 #End of Campaign Create Response Model
 
 # Single Campaign Response Model (StandardResponse -> Data)
-class SingleCampaignResponse(StandardResponse[Collections]):
+class SingleCollectionResponse(StandardResponse[Collections]):
     pass
 # End of Single Campaign Response Model
 
 # All Collection Response Model (StandardResponse -> Data)
-class AllCampaignResponse(StandardResponse[list[CollectionsReturn]]):
+class AllCollectionResponse(StandardResponse[list[CollectionsReturn]]):
     pass
 # End of All Collection Response Model

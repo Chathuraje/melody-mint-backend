@@ -27,76 +27,34 @@ async def create_campaign(campaign: Campaigns) -> CampaignsNew:
 
 # SECTION: Get Fastapi all campaigns
 async def get_all_campaigns() -> AllCampaignResponse:
-    campaigns = campaign_collection.find()
-    individual_campaign_responses = []
-    for campaign_data in campaigns:
-        campaign_id = str(campaign_data['_id'])
-        campaign = CampaignsReturn(
-            id=campaign_id,
-            title=campaign_data.get('title'),
-            description=campaign_data.get('description'),
-            title_of_the_music=campaign_data.get('title_of_the_music'),
-            image=campaign_data.get('image'),
-            nft_image=campaign_data.get('nft_image'),
-            start_date=campaign_data.get('start_date'),
-            end_date=campaign_data.get('end_date'),
-            target_amount=campaign_data.get('target_amount'),
-            distribution=campaign_data.get('distribution'),
-            current_amount=campaign_data.get('current_amount'),
-            created_by=campaign_data.get('created_by'),
-            created_at=campaign_data.get('created_at'),
-            geners=campaign_data.get('geners'),
-            is_active=campaign_data.get('is_active'),
-            is_released=campaign_data.get('is_released'),
-            is_completed=campaign_data.get('is_completed'),
-            status=campaign_data.get('status'),
-            investers_list=campaign_data.get('investers_list'),
-            investment_amount=campaign_data.get('investment_amount'),
-            invested_date=campaign_data.get('invested_date'),
-            own_percentage=campaign_data.get('own_percentage')
+    campaigns = []
+    for campaign in campaign_collection.find():
+        id=str(campaign["_id"])
+        campaigns.append(CampaignsReturn(id=id, **campaign))
+        
+    if len(campaigns) == 0:
+        return AllCampaignResponse(
+            code=404,
+            response="No Campaign found",
+            data=None
         )
-        individual_campaign_responses.append(campaign)
-
-    # Create AllCampaignResponse
-    return AllCampaignResponse(
-        code=200,
-        response=f"{len(individual_campaign_responses)} Campaigns found",
-        data=individual_campaign_responses
-    )
+    else:
+        return AllCampaignResponse(
+            code=200,
+            response=f"{len(campaigns)} Campaigns found",
+            data=campaigns
+        )
 # SECTION: End of FastAPI Get all campaigns
 
 # SECTION: Get Single Campaign from Campaign id
 async def get_campaign(campaign_id: str) -> SingleCampaignResponse:
     campaign_data = campaign_collection.find_one({"_id": ObjectId(campaign_id)})
     if campaign_data:
-        campaign = CampaignsReturn(
-            id=str(campaign_data['_id']),
-            title=campaign_data.get('title'),
-            description=campaign_data.get('description'),
-            title_of_the_music=campaign_data.get('title_of_the_music'),
-            image=campaign_data.get('image'),
-            nft_image=campaign_data.get('nft_image'),
-            start_date=campaign_data.get('start_date'),
-            end_date=campaign_data.get('end_date'),
-            target_amount=campaign_data.get('target_amount'),
-            distribution=campaign_data.get('distribution'),
-            current_amount=campaign_data.get('current_amount'),
-            created_by=campaign_data.get('created_by'),
-            created_at=campaign_data.get('created_at'),
-            geners=campaign_data.get('geners'),
-            is_active=campaign_data.get('is_active'),
-            is_released=campaign_data.get('is_released'),
-            is_completed=campaign_data.get('is_completed'),
-            status=campaign_data.get('status'),
-            investers_list=campaign_data.get('investers_list'),
-            investment_amount=campaign_data.get('investment_amount'),
-            invested_date=campaign_data.get('invested_date'),
-            own_percentage=campaign_data.get('own_percentage')
-        )
+        id=str(campaign_data["_id"])
         return SingleCampaignResponse(
             code=200,
-            response="Campaign found",
-            data=campaign
+            response="Campaign retrieved successfully",
+            data=Campaigns(**campaign_data)
         )
     else:
         return SingleCampaignResponse(
@@ -104,6 +62,7 @@ async def get_campaign(campaign_id: str) -> SingleCampaignResponse:
             response="Campaign not found",
             data=None
         )
+    
 # SECTION: End of get Single Campaign from Campaign id
 
 
@@ -200,84 +159,44 @@ async def invest_campaign(campaign_id: str, investment_details: InvestCampaign) 
 
 
 # SECTION: Get User Campaigns
-
 async def get_user_campaigns(user_id: str) -> AllCampaignResponse:
-    user_campaigns = campaign_collection.find({"created_by": user_id})
-    individual_campaign_responses = []
-    for campaign_data in user_campaigns:
-        campaign_id = str(campaign_data['_id'])
-        campaign = CampaignsReturn(
-            id=campaign_id,
-            title=campaign_data.get('title'),
-            description=campaign_data.get('description'),
-            title_of_the_music=campaign_data.get('title_of_the_music'),
-            image=campaign_data.get('image'),
-            nft_image=campaign_data.get('nft_image'),
-            start_date=campaign_data.get('start_date'),
-            end_date=campaign_data.get('end_date'),
-            target_amount=campaign_data.get('target_amount'),
-            distribution=campaign_data.get('distribution'),
-            current_amount=campaign_data.get('current_amount'),
-            created_by=campaign_data.get('created_by'),
-            created_at=campaign_data.get('created_at'),
-            geners=campaign_data.get('geners'),
-            is_active=campaign_data.get('is_active'),
-            is_released=campaign_data.get('is_released'),
-            is_completed=campaign_data.get('is_completed'),
-            status=campaign_data.get('status'),
-            investers_list=campaign_data.get('investers_list'),
-            investment_amount=campaign_data.get('investment_amount'),
-            invested_date=campaign_data.get('invested_date'),
-            own_percentage=campaign_data.get('own_percentage')
+    user_campaigns = []
+    for campaign in campaign_collection.find({"created_by": user_id}):
+        id=str(campaign["_id"])
+        user_campaigns.append(CampaignsReturn(id=id, **campaign))
+        
+    if len(user_campaigns) == 0:
+        return AllCampaignResponse(
+            code=404,
+            response="No Campaign found",
+            data=None
         )
-        individual_campaign_responses.append(campaign)
-
-    # Create AllCampaignResponse
-    return AllCampaignResponse(
-        code=200,
-        response=f"{len(individual_campaign_responses)} Campaigns found",
-        data=individual_campaign_responses
-    )
-
+    else:
+        return AllCampaignResponse(
+            code=200,
+            response=f"{len(user_campaigns)} Campaigns found",
+            data=user_campaigns
+        )
 # SECTION: End of Get User Campaigns
 
 
 # SECTION: Get User Investments
 async def get_investments(user_id: str) -> AllCampaignResponse:
-    user_investments = campaign_collection.find({"investers_list": user_id})
-    individual_campaign_responses = []
-    for campaign_data in user_investments:
-        campaign_id = str(campaign_data['_id'])
-        campaign = CampaignsReturn(
-            id=campaign_id,
-            title=campaign_data.get('title'),
-            description=campaign_data.get('description'),
-            title_of_the_music=campaign_data.get('title_of_the_music'),
-            image=campaign_data.get('image'),
-            nft_image=campaign_data.get('nft_image'),
-            start_date=campaign_data.get('start_date'),
-            end_date=campaign_data.get('end_date'),
-            target_amount=campaign_data.get('target_amount'),
-            distribution=campaign_data.get('distribution'),
-            current_amount=campaign_data.get('current_amount'),
-            created_by=campaign_data.get('created_by'),
-            created_at=campaign_data.get('created_at'),
-            geners=campaign_data.get('geners'),
-            is_active=campaign_data.get('is_active'),
-            is_released=campaign_data.get('is_released'),
-            is_completed=campaign_data.get('is_completed'),
-            status=campaign_data.get('status'),
-            investers_list=campaign_data.get('investers_list'),
-            investment_amount=campaign_data.get('investment_amount'),
-            invested_date=campaign_data.get('invested_date'),
-            own_percentage=campaign_data.get('own_percentage')
+    user_investments = []
+    for campaign in campaign_collection.find({"investers_list": user_id}):
+        id=str(campaign["_id"])
+        user_investments.append(CampaignsReturn(id=id, **campaign))
+        
+    if len(user_investments) == 0:
+        return AllCampaignResponse(
+            code=404,
+            response="No Investments found",
+            data=None
         )
-        individual_campaign_responses.append(campaign)
-
-    # Create AllCampaignResponse
-    return AllCampaignResponse(
-        code=200,
-        response=f"{len(individual_campaign_responses)} Investments found",
-        data=individual_campaign_responses
-    )
+    else:
+        return AllCampaignResponse(
+            code=200,
+            response=f"{len(user_investments)} Investments found",
+            data=user_investments
+        )
 # SECTION: End of Get User Investments

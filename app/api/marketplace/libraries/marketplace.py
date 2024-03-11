@@ -1,5 +1,5 @@
 from app.models.Marketplace import Collections, NFT, CollectionNew, CollectionsReturn
-from app.utils.response import CollectionCreateResponse, AllCampaignResponse, SingleCampaignResponse
+from app.utils.response import CollectionCreateResponse, AllCollectionResponse, SingleCollectionResponse
 from app.utils.database import user_collection, marketplace_collection
 from bson import ObjectId
 
@@ -25,20 +25,20 @@ async def create_collection(collections: Collections) -> CollectionNew:
 
 
 # SECTION: FastAPI Get All Collections
-async def get_all_collections() -> SingleCampaignResponse:
+async def get_all_collections() -> AllCollectionResponse:
     collections = []
     for collection in marketplace_collection.find():
         id=str(collection["_id"])
         collections.append(CollectionsReturn(id=id, **collection))
         
     if len(collections) == 0:
-        return AllCampaignResponse(
+        return AllCollectionResponse(
             code=404,
             response="No collections found",
             data=None
         )
     else:
-        return AllCampaignResponse(
+        return AllCollectionResponse(
             code=200,
             response="Collections retrieved successfully",
             data=collections
@@ -48,17 +48,17 @@ async def get_all_collections() -> SingleCampaignResponse:
 
 
 # SECTION: FastAPI Get Single Collection
-async def get_campaign(collection_id: str) -> SingleCampaignResponse:
+async def get_campaign(collection_id: str) -> SingleCollectionResponse:
     collection = marketplace_collection.find_one({"_id": ObjectId(collection_id)})
     if collection:
         id=str(collection["_id"])
-        return SingleCampaignResponse(
+        return SingleCollectionResponse(
             code=200,
             response="Collection retrieved successfully",
             data=Collections(**collection)
         )
     else:
-        return SingleCampaignResponse(
+        return SingleCollectionResponse(
             code=404,
             response="Collection not found",
             data=None
