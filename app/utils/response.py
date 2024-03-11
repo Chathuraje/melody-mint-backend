@@ -5,6 +5,7 @@ from app.models.Base import LogContent
 from app.models.Users import User, UserReturn, UserReturnID, Token
 from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew, InvestCampaign
 from app.models.MusicIdentifier import Music, MusicNew
+from app.models.VideoIdentifier import Video, VideoNew
 from app.models.Marketplace import CollectionNew, Collections, CollectionsReturn, NFT, NFTReturn, NFTNew
 
 # Standard Response Model (Code, Response, Data)
@@ -127,3 +128,13 @@ class SingleNFTResponse(StandardResponse[NFT]):
 class AllNFTResponse(StandardResponse[list[NFTReturn]]):
     pass
 # End of All Collection Response Model
+
+# Video Video Train Response Model (StandardResponse -> Data)
+class VideoTrainResponse(StandardResponse[VideoNew]):
+    pass
+# End of Video Train Response Model
+
+# Video Identifier Response Model (StandardResponse -> Data)
+class VideoIdentifierResponse(StandardResponse[Video]):
+    pass
+# End of Video Identifier Response Model
