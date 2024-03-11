@@ -11,7 +11,7 @@ logger = get_logger()
 
 
 @router.post("/train", response_model=MusicTrainResponse)
-async def identify_uploaded_music(music: Music, file: UploadFile = File(...)):
+async def train_music(music: Music, file: UploadFile = File(...)):
     logger.info("Training music")
     return await music_identifier.train_music(music, file)
 
