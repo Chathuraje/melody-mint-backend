@@ -9,4 +9,5 @@ db = client[config.DB_NAME]
 user_collection = db["users"]
 campaign_collection = db["campaigns"]
 marketplace_collection = db["marketplace"]
+nft_collection = db["nft"]
 

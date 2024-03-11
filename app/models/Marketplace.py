@@ -27,6 +27,12 @@ class NFT(BaseModel):
     price: Optional[str] = Field(..., description="Price of the NFT")
     status: Optional[str] = Field(..., description="Status of the NFT")
     
+class NFTNew(BaseModel):
+    id: Optional[str] = Field(..., description="Unique ID of the campaigns")
+
+class NFTReturn(NFT):
+    id: Optional[str] = Field(..., description="Unique ID of the campaigns")
+    
     
 class Transactions(BaseModel):
     sender_id: Optional[str] = Field(..., description="Sender ID of the Transaction")

@@ -5,7 +5,7 @@ from app.models.Base import LogContent
 from app.models.Users import User, UserReturn, UserReturnID, Token
 from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew, InvestCampaign
 from app.models.MusicIdentifier import Music, MusicNew
-from app.models.Marketplace import CollectionNew, Collections, CollectionsReturn
+from app.models.Marketplace import CollectionNew, Collections, CollectionsReturn, NFT, NFTReturn, NFTNew
 
 # Standard Response Model (Code, Response, Data)
 T = TypeVar('T')
@@ -109,5 +109,21 @@ class SingleCollectionResponse(StandardResponse[Collections]):
 
 # All Collection Response Model (StandardResponse -> Data)
 class AllCollectionResponse(StandardResponse[list[CollectionsReturn]]):
+    pass
+# End of All Collection Response Model
+
+
+# Campaign Create Collection Model (StandardResponse -> Data)
+class NFTCreateResponse(StandardResponse[NFTNew]):
+    pass
+#End of Campaign Create Response Model
+
+# Single Campaign Response Model (StandardResponse -> Data)
+class SingleNFTResponse(StandardResponse[NFT]):
+    pass
+# End of Single Campaign Response Model
+
+# All Collection Response Model (StandardResponse -> Data)
+class AllNFTResponse(StandardResponse[list[NFTReturn]]):
     pass
 # End of All Collection Response Model
