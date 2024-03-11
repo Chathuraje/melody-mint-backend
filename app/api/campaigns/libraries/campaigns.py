@@ -52,7 +52,8 @@ async def get_all_campaigns() -> AllCampaignResponse:
             status=campaign_data.get('status'),
             investers_list=campaign_data.get('investers_list'),
             investment_amount=campaign_data.get('investment_amount'),
-            invested_date=campaign_data.get('invested_date')
+            invested_date=campaign_data.get('invested_date'),
+            own_percentage=campaign_data.get('own_percentage')
         )
         individual_campaign_responses.append(campaign)
 
@@ -89,7 +90,8 @@ async def get_campaign(campaign_id: str) -> SingleCampaignResponse:
             status=campaign_data.get('status'),
             investers_list=campaign_data.get('investers_list'),
             investment_amount=campaign_data.get('investment_amount'),
-            invested_date=campaign_data.get('invested_date')
+            invested_date=campaign_data.get('invested_date'),
+            own_percentage=campaign_data.get('own_percentage')
         )
         return SingleCampaignResponse(
             code=200,
@@ -131,10 +133,14 @@ async def invest_campaign(campaign_id: str, investment_details: InvestCampaign) 
     campaign_data = campaign_collection.find_one({"_id": ObjectId(campaign_id)})
     if campaign_data:
         current_amount = int(campaign_data.get('current_amount'))
+        target_amount = int(campaign_data.get('target_amount'))
         
         invester_id = str(investment_details.invester_id)
         amount = int(investment_details.amount)
         date = str(investment_details.date)
+        
+        # calculate own percentage after invest
+        percentage = (investment_amount / target_amount) * 100
         
         if current_amount is None:
             current_amount = 0
@@ -147,6 +153,7 @@ async def invest_campaign(campaign_id: str, investment_details: InvestCampaign) 
             investers_list = campaign_data.get('investers_list')
             investment_amount = campaign_data.get('investment_amount')
             invested_date = campaign_data.get('invested_date')
+            own_percentage = campaign_data.get('own_percentage')
             
             # if invester_id in investers_list:
             #     # Update investment amount for existing investor
@@ -160,9 +167,10 @@ async def invest_campaign(campaign_id: str, investment_details: InvestCampaign) 
             investers_list.append(invester_id)
             investment_amount.append(amount)
             invested_date.append(date)
+            own_percentage.append(percentage)
             
             campaign_id_obj = ObjectId(campaign_id)
-            result = campaign_collection.update_one({"_id": ObjectId(campaign_id_obj)}, {"$set": {"current_amount": current_amount, "investers_list": investers_list, "investment_amount": investment_amount, "invested_date": invested_date}})
+            result = campaign_collection.update_one({"_id": ObjectId(campaign_id_obj)}, {"$set": {"current_amount": current_amount, "investers_list": investers_list, "investment_amount": investment_amount, "invested_date": invested_date, "own_percentage": own_percentage}})
             if result.modified_count == 1:
                 return InvestmentResponse(
                     code=200,
@@ -218,7 +226,8 @@ async def get_user_campaigns(user_id: str) -> AllCampaignResponse:
             status=campaign_data.get('status'),
             investers_list=campaign_data.get('investers_list'),
             investment_amount=campaign_data.get('investment_amount'),
-            invested_date=campaign_data.get('invested_date')
+            invested_date=campaign_data.get('invested_date'),
+            own_percentage=campaign_data.get('own_percentage')
         )
         individual_campaign_responses.append(campaign)
 
@@ -259,7 +268,8 @@ async def get_investments(user_id: str) -> AllCampaignResponse:
             status=campaign_data.get('status'),
             investers_list=campaign_data.get('investers_list'),
             investment_amount=campaign_data.get('investment_amount'),
-            invested_date=campaign_data.get('invested_date')
+            invested_date=campaign_data.get('invested_date'),
+            own_percentage=campaign_data.get('own_percentage')
         )
         individual_campaign_responses.append(campaign)
 

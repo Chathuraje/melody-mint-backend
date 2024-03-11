@@ -22,6 +22,7 @@ class Campaigns(BaseModel):
     investers_list: Optional[list[str]] = Field(..., description="Investers list of the campaign")
     investment_amount: Optional[list[float]] = Field(..., description="Investment amount of the campaign")
     invested_date: Optional[list[str]] = Field(..., description="Invested date of the campaign")
+    own_percentage: Optional[list[float]] = Field(..., description="Own percentage of the campaign")
     
     
 class CampaignsReturn(Campaigns):
