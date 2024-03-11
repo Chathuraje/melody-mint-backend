@@ -5,6 +5,7 @@ from app.models.Base import LogContent
 from app.models.Users import User, UserReturn, UserReturnID, Token
 from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew, InvestCampaign
 from app.models.MusicIdentifier import Music, MusicNew
+from app.models.Marketplace import CollectionNew, Collections, CollectionsReturn
 
 # Standard Response Model (Code, Response, Data)
 T = TypeVar('T')
@@ -94,3 +95,19 @@ class MusicTrainResponse(StandardResponse[MusicNew]):
 class MusicIdentifierResponse(StandardResponse[Music]):
     pass
 # End of Music Identifier Response Model
+
+
+# Campaign Create Collection Model (StandardResponse -> Data)
+class CollectionCreateResponse(StandardResponse[CollectionNew]):
+    pass
+#End of Campaign Create Response Model
+
+# Single Campaign Response Model (StandardResponse -> Data)
+class SingleCampaignResponse(StandardResponse[Collections]):
+    pass
+# End of Single Campaign Response Model
+
+# All Collection Response Model (StandardResponse -> Data)
+class AllCampaignResponse(StandardResponse[list[CollectionsReturn]]):
+    pass
+# End of All Collection Response Model
