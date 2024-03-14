@@ -31,7 +31,12 @@ jobs:
         run: |
           echo "DB_USERNAME=${{ secrets.DB_NAME }}" > .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_URL }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_USERNAME }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.JWT_ALGORITHM }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.JWT_SECRET }}" >> .env
+          echo "DB_URL=${{ secrets.DB_URL }}" >> .env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+          echo "JWT_ALGORITHM=${{ secrets.JWT_ALGORITHM }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+
+      - name: Run setup.sh with sudo
+        run: |
+          chmod +x setup.sh
+          sudo ./setup.sh
