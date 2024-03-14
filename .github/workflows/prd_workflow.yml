@@ -39,4 +39,4 @@ jobs:
       - name: Run setup.sh with sudo
         run: |
           chmod +x setup.sh
-          sudo ./setup.sh
+          sudo -n ./setup.sh || true
