@@ -40,5 +40,6 @@ jobs:
 
       - name: Run setup.sh with sudo
         run: |
+          sleep 5
           chmod +x setup.sh
           sudo -n ./setup.sh || true
