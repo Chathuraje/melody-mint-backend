@@ -88,3 +88,9 @@ async def update_user(user_id: str, user: User) -> IndividualUserResponse:
             data=None
         )
 # SECTION: End of FastAPI Individual User Routes -> Update
+
+
+# SECTION: RastAPI Wallet Routes -> Wallet Amount
+async def get_wallet_amount():
+    pass
+# SECTION: End of FastAPI Wallet Routes -> Wallet Amount

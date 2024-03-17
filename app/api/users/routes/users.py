@@ -33,3 +33,11 @@ async def update_user(user_id: str, user: User):
         raise HTTPException(status_code=404, detail="User not found")
     return updated_user
 
+@router.get('/{user_id}/wallet_amount')
+async def wallet_amount(user_id: str):
+    logger.info(f"Getting wallet amount for user with ID: {user_id}")
+    wallet_amount = await users.get_wallet_amount(user_id)
+    if wallet_amount is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return wallet_amount
+
