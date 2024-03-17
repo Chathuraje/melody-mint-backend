@@ -23,7 +23,7 @@ async def get_user(user_id: str) -> IndividualUserResponse:
                 state=user.get("state"),
                 profile_picture=user.get("profile_picture"),
                 is_artist=user.get("is_artist"),
-                artist_data=Artist(**user.get("artist_data")),
+                artist_data=user.get("artist_data"),
                 disabled=user.get("disabled")
             )
         )
@@ -53,7 +53,7 @@ async def get_all_users() -> AllUsersResponse:
             state=user_data.get("state"),
             profile_picture=user_data.get("profile_picture"),
             is_artist=user_data.get("is_artist"),
-            artist_data=Artist(**user_data.get("artist_data")),
+            artist_data=user_data.get("artist_data"),
             disabled=user_data.get("disabled"),
             id=user_id
         )

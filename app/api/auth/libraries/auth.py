@@ -53,7 +53,7 @@ async def verify_message(request: ChallengeResponse):
         eth_address=json.loads(response.text).get('address')
         logger.info(f"User {eth_address} authenticated")
         
-        return  await login(eth_address)
+        return await login(eth_address)
     else:
         logger.info("User not authenticated")
         return UserLoginResponse(

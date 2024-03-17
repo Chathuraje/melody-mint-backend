@@ -3,7 +3,7 @@ from app.utils.logging import setup_logger, get_logger
 from app.api.auth.libraries import auth
 from app.utils.response import UserRegisterResponse, UserLoginResponse, TokenResponse
 from app.models.Users import UserLogin, Token, ChallengeReqeust, ChallengeResponse, User
-from fastapi.security import OAuth2PasswordRequestForm
+# from fastapi.security import OAuth2PasswordRequestForm
 import moralis
 
 setup_logger()
@@ -21,10 +21,10 @@ async def register(user_data: User):
     logger.info("Register endpoint accessed.")
     return await auth.register(user_data)
 
-@router.post("/token", response_model=TokenResponse)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    logger.info("Login for access token")
-    return await auth.login_for_access_token(form_data)
+# @router.post("/token", response_model=TokenResponse)
+# async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
+#     logger.info("Login for access token")
+#     return await auth.login_for_access_token(form_data)
     
 @router.post("/request_challenge")
 async def request_challenge(request: ChallengeReqeust):
