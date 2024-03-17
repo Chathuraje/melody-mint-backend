@@ -10,3 +10,5 @@ DB_NAME = os.getenv("DB_NAME")
 
 JWT_SECRET=os.getenv("JWT_SECRET")
 JWT_ALGORITHM=os.getenv("JWT_ALGORITHM")
+
+MORALIS_API_KEY=os.getenv("MORALIS_API_KEY")

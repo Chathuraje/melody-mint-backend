@@ -30,15 +30,11 @@ class User(BaseModel):
 class UserReturn(User):
     id: Optional[str] = Field(..., description="Unique ID of the user")
 
-class UserInDB(User):
-    hash_password: Optional[str] = Field(..., description="Hashed password of the user")
-
 class UserReturnID(BaseModel):
     id: Optional[str] = Field(..., description="Unique ID of the user")
 
 class UserLogin(BaseModel):
     wallet_address: Optional[str] = Field(..., description="Wallet address of the user")
-    password: Optional[str] = Field(..., description="Password of the user")
     
 class Token(BaseModel):
     access_token: Optional[str] = Field(..., description="Access token of the user")
@@ -48,4 +44,12 @@ class TokenData(BaseModel):
     wallet_address: Optional[str] = Field(..., description="Wallet address of the user")
     
     
+class ChallengeReqeust(BaseModel):
+    address: str = Field(..., description="Wallet address of the user")
+    chainId: str = Field(..., description="Chain of the user")
+    network: str = Field(..., description="Network of the user")
     
+class ChallengeResponse(BaseModel):
+    message: str = Field(..., description="Message for the challenge")
+    signature: str = Field(..., description="Signature for the challenge") 
+    network: str = Field(..., description="Network of the user")
