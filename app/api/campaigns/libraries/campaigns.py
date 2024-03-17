@@ -2,7 +2,7 @@ from app.utils.response import CampaignCreateResponse, SingleCampaignResponse, A
 from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew
 from app.utils.database import user_collection, campaign_collection
 from bson import ObjectId
-from app.models.Campaigns import Campaigns, InvestCampaign
+from app.models.Campaigns import Campaigns, InvestersList
 
 
 # SECTION: FastAPI Create a new campaign
@@ -88,7 +88,7 @@ async def update_campaign(campaign_id: str, campaign: Campaigns) -> SingleCampai
 
 
 # SECTION: Invest to the Campaign
-async def invest_campaign(campaign_id: str, investment_details: InvestCampaign) -> InvestmentResponse:
+async def invest_campaign(campaign_id: str, investment_details: InvestersList) -> InvestmentResponse:
     campaign_data = campaign_collection.find_one({"_id": ObjectId(campaign_id)})
     if campaign_data:
         current_amount = int(campaign_data.get('current_amount'))

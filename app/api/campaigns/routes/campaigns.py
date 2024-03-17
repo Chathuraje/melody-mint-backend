@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from app.utils.logging import get_logger
 from app.api.campaigns.libraries import campaigns
 from app.utils.response import CampaignCreateResponse, SingleCampaignResponse, AllCampaignResponse, InvestmentResponse
-from app.models.Campaigns import Campaigns, InvestCampaign
+from app.models.Campaigns import Campaigns, InvestersList
 
 
 router = APIRouter()
@@ -41,7 +41,7 @@ async def update_campaign(campaign_id: str, campaign: Campaigns):
     return updated_campaign
 
 @router.put("/{campaign_id}/invest", response_model=InvestmentResponse)
-async def invest_campaign(campaign_id: str, investment_details: InvestCampaign):
+async def invest_campaign(campaign_id: str, investment_details: InvestersList):
     logger.info(f"Investing in campaign with ID: {campaign_id}")
     updated_campaign = await campaigns.invest_campaign(campaign_id, investment_details)
     if updated_campaign is None:

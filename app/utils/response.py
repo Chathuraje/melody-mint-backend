@@ -3,7 +3,7 @@ from typing import Generic, Optional, TypeVar
 import json
 from app.models.Base import LogContent
 from app.models.Users import User, UserReturn, UserReturnID, Token
-from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew, InvestCampaign
+from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew, InvestersList
 from app.models.MusicIdentifier import Music, MusicNew
 from app.models.VideoIdentifier import Video, VideoNew
 from app.models.Marketplace import CollectionNew, Collections, CollectionsReturn, NFT, NFTReturn, NFTNew
@@ -83,7 +83,7 @@ class AllCampaignResponse(StandardResponse[list[CampaignsReturn]]):
 
 
 # Investment Response Model (StandardResponse -> Data)
-class InvestmentResponse(StandardResponse[InvestCampaign]):
+class InvestmentResponse(StandardResponse[InvestersList]):
     pass
 # End of Investment Response Model
 

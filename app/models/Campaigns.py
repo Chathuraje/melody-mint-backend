@@ -32,9 +32,3 @@ class CampaignsReturn(Campaigns):
 class CampaignsNew(BaseModel):
     id: Optional[str] = Field(..., description="Unique ID of the campaigns")
     
-
-class InvestCampaign(BaseModel):
-    invester_id: Optional[str] = Field(..., description="Investers list of the campaign")
-    amount: Optional[int] = Field(..., description="Investment amount of the campaign")
-    date: Optional[str] = Field(..., description="Invested data of the campaign")
-    
