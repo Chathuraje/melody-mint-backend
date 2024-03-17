@@ -3,6 +3,7 @@ from typing import Optional
 
 class InvestersList(BaseModel):
     invester_id: Optional[str] = Field(..., description="Investers list of the campaign")
+    invester_name: Optional[str] = Field(..., description="Investers name of the campaign")
     investment_amount: Optional[float] = Field(..., description="Investment amount of the campaign")
     invested_date: Optional[str] = Field(..., description="Invested data of the campaign")
     own_percentage: Optional[float] = Field(..., description="Own percentage of the campaign")

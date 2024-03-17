@@ -2,6 +2,7 @@ from app.utils.response import IndividualUserResponse, AllUsersResponse
 from app.models.Users import User, Artist, UserReturn
 from app.utils.database import user_collection
 from bson import ObjectId
+from app.utils.moralis import basic
 
 # SECTION: FastAPI Individual User Routes -> Login
 async def get_user(user_id: str) -> IndividualUserResponse:
@@ -91,6 +92,11 @@ async def update_user(user_id: str, user: User) -> IndividualUserResponse:
 
 
 # SECTION: RastAPI Wallet Routes -> Wallet Amount
-async def get_wallet_amount():
-    pass
+async def get_wallet_amount(user_id):
+    user_id_obj = ObjectId(user_id)
+    user = user_collection.find_one({"_id": user_id_obj})
+    if user:
+        return basic.get_wallet_amount(user.get("wallet_address"))
+    else:
+        return None
 # SECTION: End of FastAPI Wallet Routes -> Wallet Amount
