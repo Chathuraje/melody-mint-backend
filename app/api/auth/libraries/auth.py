@@ -97,7 +97,7 @@ async def register(user_data: User) -> UserRegisterResponse:
             data=None
         )
     
-    user_data.hash_password = jwt.get_password_hash(user_data.hash_password)
+    # user_data.hash_password = jwt.get_password_hash(user_data.hash_password)
     user_dict = user_data.dict()
     
     result = user_collection.insert_one(user_dict)

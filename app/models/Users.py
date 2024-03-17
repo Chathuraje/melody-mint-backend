@@ -5,10 +5,8 @@ from bson import ObjectId
 class Artist(BaseModel):
     profession: Optional[str] = Field(..., description="Profession of the artist")
     about: Optional[str] = Field(..., description="About the artist")
-    facebook: Optional[str] = Field(..., description="Facebook Link of the artist")
     x: Optional[str] = Field(..., description="x Link of the artist")
     discord: Optional[str] = Field(..., description="Discord Link of the artist")
-    spotify: Optional[str] = Field(..., description="Spotify Link of the artist")
     tiktok: Optional[str] = Field(..., description="Tiktok Link of the artist")
     
 
