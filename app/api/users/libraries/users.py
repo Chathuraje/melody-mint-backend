@@ -24,7 +24,8 @@ async def get_user(user_id: str) -> IndividualUserResponse:
                 profile_picture=user.get("profile_picture"),
                 is_artist=user.get("is_artist"),
                 artist_data=user.get("artist_data"),
-                disabled=user.get("disabled")
+                disabled=user.get("disabled"),
+                id=user_id_obj
             )
         )
     else:

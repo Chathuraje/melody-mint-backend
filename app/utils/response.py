@@ -39,7 +39,7 @@ class ReadLogResponse(StandardResponse[LogContent]):
 
 
 # User Login Response Model (StandardResponse -> Data)
-class UserLoginResponse(StandardResponse[UserReturnID]):
+class UserLoginResponse(StandardResponse[User]):
     pass
 # End of User Login Response Model
 
@@ -50,7 +50,7 @@ class TokenResponse(StandardResponse[Token]):
 
 
 # User Register Response Model (StandardResponse -> Data)
-class UserRegisterResponse(StandardResponse[UserReturnID]):
+class UserRegisterResponse(StandardResponse[User]):
     pass
 #End of User Register Response Model
 

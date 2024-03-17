@@ -77,7 +77,21 @@ async def login(wallet_id) -> UserLoginResponse:
     return UserLoginResponse(
         code=200,
         response="User Login Successfull",
-        data=UserReturnID(id=str(user["_id"]))
+        data=UserReturn(
+            wallet_address=user.get("wallet_address"),
+            username=user.get("username"),
+            first_name=user.get("first_name"),
+            last_name=user.get("last_name"),
+            email=user.get("email"),
+            contact_no=user.get("contact_no"),
+            country=user.get("country"),
+            state=user.get("state"),
+            profile_picture=user.get("profile_picture"),
+            is_artist=user.get("is_artist"),
+            artist_data=user.get("artist_data"),
+            disabled=user.get("disabled"),
+            id=str(user['_id'])
+        )
     )
     # else:
     #     return UserLoginResponse(
@@ -103,10 +117,25 @@ async def register(user_data: User) -> UserRegisterResponse:
     result = user_collection.insert_one(user_dict)
     user_id = str(result.inserted_id)
     
-    return UserRegisterResponse(
+    if user_id:
+        return UserRegisterResponse(
             code=200,
             response="User Registered Successfully",
-            data=UserReturnID(id=user_id)
+            data=UserReturn(
+                wallet_address=user_data.wallet_address,
+                username=user_data.username,
+                first_name=user_data.first_name,
+                last_name=user_data.last_name,
+                email=user_data.email,
+                contact_no=user_data.contact_no,
+                country=user_data.country,
+                state=user_data.state,
+                profile_picture=user_data.profile_picture,
+                is_artist=user_data.is_artist,
+                artist_data=user_data.artist_data,
+                disabled=user_data.disabled,
+                id=user_id
+            )
         )
 # SECTION: End of FastAPI Auth Routes -> Registration
 
