@@ -119,7 +119,8 @@ async def invest_campaign(campaign_id: str, investment_details: InvestersList) -
                             "invester_id": invester_id,
                             "investment_amount": amount,
                             "invested_date": date,
-                            "own_percentage": percentage
+                            "own_percentage": percentage,
+                            "invester_name": user_data.get('invester_name')
                         }
                     },
                     "$set": {

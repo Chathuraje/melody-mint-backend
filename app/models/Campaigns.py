@@ -7,6 +7,7 @@ class InvestersList(BaseModel):
     investment_amount: Optional[float] = Field(..., description="Investment amount of the campaign")
     invested_date: Optional[str] = Field(..., description="Invested data of the campaign")
     own_percentage: Optional[float] = Field(..., description="Own percentage of the campaign")
+    
 class Campaigns(BaseModel):
     title: Optional[str] = Field(..., description="Title of the campaign")
     description: Optional[str] = Field(..., description="Description of the campaign")
