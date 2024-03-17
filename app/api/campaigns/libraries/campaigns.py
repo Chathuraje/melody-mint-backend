@@ -95,11 +95,11 @@ async def invest_campaign(campaign_id: str, investment_details: InvestersList) -
         target_amount = int(campaign_data.get('target_amount'))
         
         invester_id = str(investment_details.invester_id)
-        amount = int(investment_details.amount)
-        date = str(investment_details.date)
+        amount = int(investment_details.investment_amount)
+        date = str(investment_details.invested_date)
         
         # calculate own percentage after invest
-        percentage = (investment_amount / target_amount) * 100
+        percentage = (amount / target_amount) * 100
         percentage = round(percentage)
 
         if current_amount is None:
@@ -110,39 +110,28 @@ async def invest_campaign(campaign_id: str, investment_details: InvestersList) -
         user_data = user_collection.find_one({"_id": ObjectId(user_id_obj)})  
        
         if user_data:
-            investers_list = campaign_data.get('investers_list')
-            investment_amount = campaign_data.get('investment_amount')
-            invested_date = campaign_data.get('invested_date')
-            own_percentage = campaign_data.get('own_percentage')
-            
-            # if invester_id in investers_list:
-            #     # Update investment amount for existing investor
-            #     index = investers_list.index(invester_id)
-            #     investment_amount[index] += amount
-            # else:
-            #     # Append new investor and investment amount
-            #     investers_list.append(invester_id)
-            #     investment_amount.append(amount)
-            
-            investers_list.append(invester_id)
-            investment_amount.append(amount)
-            invested_date.append(date)
-            own_percentage.append(percentage)
-            
-            campaign_id_obj = ObjectId(campaign_id)
-            result = campaign_collection.update_one({"_id": ObjectId(campaign_id_obj)}, {"$set": {"current_amount": current_amount, "investers_list": investers_list, "investment_amount": investment_amount, "invested_date": invested_date, "own_percentage": own_percentage}})
-            if result.modified_count == 1:
-                return InvestmentResponse(
-                    code=200,
-                    response="Investment Successful",
-                    data=None
-                )
-            else:
-                return InvestmentResponse(
-                    code=404,
-                    response="Investment not Updated",
-                    data=None
-                )
+            # Update campaign data
+            campaign_collection.update_one(
+                {"_id": ObjectId(campaign_id)},
+                {
+                    "$push": {
+                        "investers": {
+                            "invester_id": invester_id,
+                            "investment_amount": amount,
+                            "invested_date": date,
+                            "own_percentage": percentage
+                        }
+                    },
+                    "$set": {
+                        "current_amount": current_amount
+                    }
+                }
+            )
+            return InvestmentResponse(
+                code=200,
+                response="Investment successful",
+                data=CampaignsReturn(id=campaign_id, **campaign_data)
+            )
         else:
             return InvestmentResponse(
                 code=404,
@@ -182,10 +171,14 @@ async def get_user_campaigns(user_id: str) -> AllCampaignResponse:
 
 # SECTION: Get User Investments
 async def get_investments(user_id: str) -> AllCampaignResponse:
+    campaign_data = campaign_collection.find()
+    
     user_investments = []
-    for campaign in campaign_collection.find({"investers_list": user_id}):
+    for campaign in campaign_data:
         id=str(campaign["_id"])
-        user_investments.append(CampaignsReturn(id=id, **campaign))
+        campaign
+        if id in campaign_data['investments']:
+            user_investments.append(CampaignsReturn(id=id, **campaign))
         
     if len(user_investments) == 0:
         return AllCampaignResponse(
