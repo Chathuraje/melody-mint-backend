@@ -21,7 +21,6 @@ class Campaigns(BaseModel):
     created_at: Optional[str] = Field(..., description="Created at of the campaign")
     geners: Optional[str] = Field(..., description="Geners of the campaign")
     is_active: Optional[str] = Field(..., description="Is active of the campaign")
-    is_released: Optional[str] = Field(..., description="Is released of the campaign")
     is_completed: Optional[str] = Field(..., description="Is completed of the campaign")
     status: Optional[str] = Field(..., description="Status of the campaign")
     investers: Optional[list[InvestersList]] = Field(..., description="Investers of the campaign")
