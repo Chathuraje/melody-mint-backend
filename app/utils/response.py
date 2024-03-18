@@ -4,7 +4,7 @@ import json
 from app.models.Base import LogContent
 from app.models.Users import User, UserReturn, UserReturnID, Token
 from app.models.Campaigns import InvestersListReturn, Campaigns, CampaignsReturn, CampaignsNew
-from app.models.MusicIdentifier import Music, MusicNew
+from app.models.MusicIdentifier import Music, MusicNew, MusicResponse
 from app.models.VideoIdentifier import Video, VideoNew
 from app.models.Marketplace import CollectionNew, Collections, CollectionsReturn, NFT, NFTReturn, NFTNew
 
@@ -96,6 +96,9 @@ class MusicTrainResponse(StandardResponse[MusicNew]):
 class MusicIdentifierResponse(StandardResponse[Music]):
     pass
 # End of Music Identifier Response Model
+
+class MusicResponseModel(StandardResponse[list[MusicResponse]]):
+    pass
 
 
 # Campaign Create Collection Model (StandardResponse -> Data)

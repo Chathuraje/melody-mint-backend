@@ -164,7 +164,7 @@ async def invest_campaign(campaign_id: str, investment_details: InvestersList) -
             )
         
             marketplace_data = marketplace_collection.find_one({"campaign_id": campaign_id})
-            timestamp = datetime.datetime.now()
+            timestamp = int(time.time())
             nft_data = {
                 'collection_id': str(marketplace_data['_id']),
                 "token_name": f"{campaign_data['title']}_{timestamp}",
