@@ -9,19 +9,16 @@ from app.api.music_identifier.libraries import support
 from app.utils.database import music_collection
 from app.models.MusicIdentifier import MusicNew, MusicResponse
 from bson import ObjectId
+from app.api.music_identifier.libraries import identify
+from app.api.music_identifier.libraries import train
 
 
 from app.utils.logging import get_logger
 logger = get_logger()  
     
-DB_FILE = "app/data/music.db"
-    
-conn = sqlite3.connect(DB_FILE)
-cur = conn.cursor()    
 UPLOAD_DIR = "app/temp/songs/"
 
 async def train_music(file, song_name, user_id):
-    create_table()
     
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     
@@ -53,7 +50,9 @@ async def train_music(file, song_name, user_id):
     
     musics = music_collection.insert_one(music_details)
     if musics.inserted_id:
-        add_song(str(musics.inserted_id), file_path)
+        # add_song(str(musics.inserted_id), file_path)
+        song_id = musics.inserted_id
+        train.create_finger_prints(file_path, song_id)
     
     if music_details:
         return MusicTrainResponse(
@@ -67,51 +66,8 @@ async def train_music(file, song_name, user_id):
             response="Music is Not Trained",
             data=None
         ) 
-    
-def create_table():
-  cur.execute('''CREATE TABLE IF NOT EXISTS songs (
-                name TEXT PRIMARY KEY,
-                fingerprint BLOB
-                )''')
-  conn.commit()
 
-def add_song(song_name, audio_path):
-    
-  y, sr = librosa.load(audio_path)
-  mfccs = librosa.feature.mfcc(y=y, sr=sr)
-  fingerprint = np.mean(mfccs.T, axis=0)
 
-  cur.execute("INSERT OR IGNORE INTO songs (name, fingerprint) VALUES (?, ?)", (song_name, fingerprint.tobytes()))
-  conn.commit()
-  logger.info(f"Song '{song_name}' added to database.")
-
-def identify_song(audio_path):
-  y, sr = librosa.load(audio_path)
-  mfccs = librosa.feature.mfcc(y=y, sr=sr)
-  fingerprint = np.mean(mfccs.T, axis=0)
-  fingerprint_bytes = fingerprint.tobytes()
-
-  cur.execute("SELECT * FROM songs")
-  songs = cur.fetchall()
-
-  best_match = None
-  best_distance = float("inf")
-  for song_name, db_fingerprint in songs:
-    distance = np.linalg.norm(np.frombuffer(db_fingerprint, dtype=np.float32) - fingerprint)
-    if distance < best_distance:
-      best_match = song_name
-      best_distance = distance
-
-  similarity = 1 / (1 + best_distance) * 100
-
-  if best_match:
-    logger.info(f"Most similar song: {best_match} (Similarity: {similarity:.2f}%)")
-  else:
-    logger.info("No matching songs found in database.")
-
-  return best_match, similarity
-    
-        
 async def identify_music(file, platform_name="Radio King"):
     # Generat eunique name
     unique_name = str(int(time.time()))
@@ -119,39 +75,43 @@ async def identify_music(file, platform_name="Radio King"):
     with open(f"{file_path}", "wb") as buffer:
         buffer.write(file.file.read())
     
-    best_match, similarity = identify_song(file_path)
-    music = music_collection.find_one({"_id": ObjectId(best_match)})
-    if similarity < 50:
-        print(music)
-        if music:
-            platform_records = music['platform_details']
-            for platform in platform_records:
-                if platform['platform_name'] == platform_name:
-                    platform['stream_count'] = str(int(platform['stream_count']) + 1)
-                    platform['records'].append({
-                        'date': datetime.datetime.now().strftime("%Y-%m-%d"),
-                        'time': datetime.datetime.now().strftime("%H:%M:%S"),
-                        'count': int(platform['stream_count'])+1,
-                        'duration': "0"
-                    })
-                    music_collection.update_one({"_id": ObjectId(best_match)}, {"$set": {"platform_details": platform_records}})
-                    
-                    music_outer = music_collection.find_one({"_id": ObjectId(best_match)})
-                    music_outer['total_stream'] = str(int(music_outer['total_stream']) + 1)
-                    music_collection.update_one({"_id": ObjectId(best_match)}, {"$set": music_outer})
-                    break
-            
-        return MusicTrainResponse(
-            code=200,
-            response="Music Identified",
-            data=MusicNew(id=best_match)
-        )
-    else:
+    song_identification = identify.identify_from_file(file_path)
+    if song_identification is None:
         return MusicTrainResponse(
             code=404,
             response="Music Not Identified",
-            data=None
+            data=MusicNew(id=None)
         )
+    else:
+        song_id, similarity = song_identification
+        music = music_collection.find_one({"_id": ObjectId(song_id)})
+        if similarity > 20:
+            if music:
+                platform_records = music['platform_details']
+                for platform in platform_records:
+                    if platform['platform_name'] == platform_name:
+                        platform['stream_count'] = str(int(platform['stream_count']) + 1)
+                        platform['records'].append({
+                            'date': datetime.datetime.now().strftime("%Y-%m-%d"),
+                            'time': datetime.datetime.now().strftime("%H:%M:%S"),
+                            'duration': "0"
+                        })
+                        music_collection.update_one({"_id": ObjectId(song_id)}, {"$set": {"platform_details": platform_records}})
+                        
+                        music_outer = music_collection.find_one({"_id": ObjectId(song_id)})
+                        music_outer['total_stream'] = str(int(music_outer['total_stream']) + 1)
+                        music_collection.update_one({"_id": ObjectId(song_id)}, {"$set": music_outer})
+                        return MusicTrainResponse(
+                            code=200,
+                            response="Music Identified",
+                            data=MusicNew(id=song_id)
+                        )
+        else:
+            return MusicTrainResponse(
+                code=404,
+                response="Music Not Identified",
+                data=None
+            )
     
     #     logger.info("Tryint the API")
     #     result = support.find_musics_in_the_audio(file_path)
