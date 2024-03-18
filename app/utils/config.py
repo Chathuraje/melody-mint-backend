@@ -17,11 +17,11 @@ MORALIS_API_KEY=os.getenv("MORALIS_API_KEY")
 AUDD_API_KEY=os.getenv("AUDD_API_KEY")
 
 
-MYSQL_HOST = "localhost"
-MYSQL_PORT = 3306
-MYSQL_USER = "root"
-MYSQL_PASSWORD = ""
-MYSQL_DB = "research"
+MYSQL_HOST=os.getenv("MYSQL_HOST")
+MYSQL_PORT=os.getenv("MYSQL_PORT")
+MYSQL_USER=os.getenv("MYSQL_USER")
+MYSQL_PASSWORD=os.getenv("MYSQL_PASSWORD")
+MYSQL_DB=os.getenv("MYSQL_DB")
 
 IDX_FREQ_I = 0
 IDX_TIME_J = 1
