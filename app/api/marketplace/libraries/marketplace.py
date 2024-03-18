@@ -170,7 +170,7 @@ async def update_nft(collection_id: str, nft_id: str, nft: NFT) -> SingleNFTResp
 async def transfer_nft(collection_id: str, nft_id: str, owner_id: str) -> SingleNFTResponse:
     result = nft_collection.update_one(
         {"_id": ObjectId(nft_id), "collection_id": collection_id},
-        {"$set": {"owner_id": owner_id}}
+        {"$set": {"current_owner_id": owner_id}}
     )
     if result.modified_count == 1:
         nft = nft_collection.find_one({"_id": ObjectId(nft_id), "collection_id": collection_id})

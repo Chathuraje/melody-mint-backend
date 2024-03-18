@@ -33,10 +33,10 @@ async def get_nfts(collection_id: str):
     logger.info(f"Getting NFTs for collection with ID: {collection_id}")
     return await marketplace.get_nfts(collection_id)
 
-@router.post("/{collection_id}/nfts/create_nft", response_model=NFTCreateResponse)
-async def create_nft(collection_id: str, nft: NFT):
-    logger.info(f"Creating a new NFT for collection with ID: {collection_id}")
-    return await marketplace.create_nft(collection_id, nft)
+# @router.post("/{collection_id}/nfts/create_nft", response_model=NFTCreateResponse)
+# async def create_nft(collection_id: str, nft: NFT):
+#     logger.info(f"Creating a new NFT for collection with ID: {collection_id}")
+#     return await marketplace.create_nft(collection_id, nft)
 
 @router.get("/{collection_id}/nfts/{nft_id}", response_model=SingleNFTResponse)
 async def get_nft(collection_id: str, nft_id: str):

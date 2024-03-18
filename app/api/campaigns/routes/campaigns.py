@@ -13,12 +13,6 @@ async def get_all_campaigns():
     logger.info("Getting all users")
     return await campaigns.get_all_campaigns()
 
-@router.get("/users/{user_id}", response_model=AllCampaignResponse)
-async def get_user_campaigns(user_id: str):
-    logger.info(f"Getting all campaigns for user with ID: {user_id}")
-    return await campaigns.get_user_campaigns(user_id)
-
-
 @router.post("/create_campaign", response_model=CampaignCreateResponse)
 async def create_campaign(campaign: Campaigns):
     logger.info("Creating a new campaign")
@@ -39,6 +33,11 @@ async def update_campaign(campaign_id: str, campaign: Campaigns):
     if updated_campaign is None:
         raise HTTPException(status_code=404, detail="Campaign not found")
     return updated_campaign
+
+@router.get("/users/{user_id}", response_model=AllCampaignResponse)
+async def get_user_campaigns(user_id: str):
+    logger.info(f"Getting all campaigns for user with ID: {user_id}")
+    return await campaigns.get_user_campaigns(user_id)
 
 @router.put("/{campaign_id}/invest", response_model=InvestmentResponse)
 async def invest_campaign(campaign_id: str, investment_details: InvestersList):

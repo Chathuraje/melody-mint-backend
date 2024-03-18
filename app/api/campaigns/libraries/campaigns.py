@@ -1,10 +1,11 @@
 from app.utils.response import CampaignCreateResponse, SingleCampaignResponse, AllCampaignResponse, InvestmentResponse
-from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew
+from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew, InvesterCampaign
 from app.utils.database import marketplace_collection, user_collection, campaign_collection, nft_collection
 from bson import ObjectId
 from app.models.Campaigns import Campaigns, InvestersList
 from app.models.Marketplace import NFT
 import time
+import datetime
 
 # SECTION: FastAPI Create a new campaign
 async def create_campaign(campaign: Campaigns) -> CampaignsNew:
@@ -129,7 +130,7 @@ async def invest_campaign(campaign_id: str, investment_details: InvestersList) -
         
         invester_id = str(investment_details.invester_id)
         amount = int(investment_details.investment_amount)
-        date = str(investment_details.invested_date)
+        date = time.strftime("%Y-%m-%d")
         
         # calculate own percentage after invest
         percentage = (amount / target_amount) * 100
@@ -153,7 +154,7 @@ async def invest_campaign(campaign_id: str, investment_details: InvestersList) -
                             "investment_amount": amount,
                             "invested_date": date,
                             "own_percentage": percentage,
-                            "invester_name": user_data.get('invester_name')
+                            "invester_name": user_data['first_name'] + " " + user_data['last_name']
                         }
                     },
                     "$set": {
@@ -161,25 +162,32 @@ async def invest_campaign(campaign_id: str, investment_details: InvestersList) -
                     }
                 }
             )
+        
+            marketplace_data = marketplace_collection.find_one({"campaign_id": campaign_id})
+            timestamp = datetime.datetime.now()
+            nft_data = {
+                'collection_id': str(marketplace_data['_id']),
+                "token_name": f"{campaign_data['title']}_{timestamp}",
+                "token_description": campaign_data['description'],
+                "image": campaign_data['image'],
+                "owner_id": campaign_data['created_by'],
+                "current_owner_id": invester_id,
+                "creation_date": date,
+                "royalties": percentage,
+                "price": "0",
+                "status": "active"
+            }
             
-            nft_data = NFT(
-                collection_id=str(result.inserted_id),
-                token_name="artist",
-                token_description="artist",
-                image="artist",
-                owner_id=artist_name,
-                current_owner_id=artist_name,
-                creation_date="2021-10-01",
-                royalties="12",
-                price="12",
-                status="active"
-            )
-            nfts = nft_collection.insert_one()
-            return InvestmentResponse(
-                code=200,
-                response="Investment successful",
-                data=CampaignsReturn(id=campaign_id, **campaign_data)
-            )
+            
+            nfts = nft_collection.insert_one(nft_data)
+            
+            if nfts.inserted_id:
+                campaign_data = campaign_collection.find_one({"_id": ObjectId(campaign_id)})
+                return InvestmentResponse(
+                    code=200,
+                    response="Investment successful",
+                    data=CampaignsReturn(id=campaign_id, **campaign_data)
+                )
         else:
             return InvestmentResponse(
                 code=404,
@@ -222,11 +230,15 @@ async def get_investments(user_id: str) -> AllCampaignResponse:
     campaign_data = campaign_collection.find()
     
     user_investments = []
+    ids = []
     for campaign in campaign_data:
-        id=str(campaign["_id"])
-        campaign
-        if id in campaign_data['investments']:
-            user_investments.append(CampaignsReturn(id=id, **campaign))
+        for investers in campaign['investers']:
+            if investers['invester_id'] == user_id:
+                if str(campaign["_id"]) in ids:
+                    continue
+                
+                user_investments.append(InvesterCampaign(id=str(campaign["_id"]), **campaign))
+                ids.append(str(campaign["_id"]))
         
     if len(user_investments) == 0:
         return AllCampaignResponse(
