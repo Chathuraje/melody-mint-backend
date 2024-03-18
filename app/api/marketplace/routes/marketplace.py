@@ -13,10 +13,10 @@ async def get_all_collections():
     logger.info("Getting all Collections")
     return await marketplace.get_all_collections()
 
-@router.post("/create_collection", response_model=CollectionCreateResponse)
-async def create_collection(collections: Collections):
-    logger.info("Creating a new collection")
-    return await marketplace.create_collection(collections)
+# @router.post("/create_collection", response_model=CollectionCreateResponse)
+# async def create_collection(collections: Collections):
+#     logger.info("Creating a new collection")
+#     return await marketplace.create_collection(collections)
 
 @router.get("/{collection_id}", response_model=SingleCollectionResponse)
 async def get_collection(collection_id: str):

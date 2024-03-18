@@ -5,17 +5,19 @@ class Collections(BaseModel):
     name: Optional[str] = Field(..., description="Name of the Collection")
     description: Optional[str] = Field(..., description="Description of the Collection")
     owner_id: Optional[str] = Field(..., description="Owner of the Collection")
-    date: Optional[str] = Field(..., description="Date of the Collection") 
+    campaign_id: Optional[str] = Field(..., description="Campaign ID of the Collection")
     
 class CollectionNew(BaseModel):
     id: Optional[str] = Field(..., description="Unique ID of the campaigns")
 
 class CollectionsReturn(Collections):
     id: Optional[str] = Field(..., description="Unique ID of the campaigns")
+    owner_name: Optional[str] = Field(..., description="Owner Name of the Collection")
+    floor: Optional[str] = Field(..., description="Flor of the Collection")
+    volume: Optional[str] = Field(..., description="Volume of the Collection")
     
     
 class NFT(BaseModel):
-    token_id: Optional[str] = Field(..., description="Token ID of the NFT")
     collection_id: Optional[str] = Field(..., description="Collection ID of the NFT")
     token_name: Optional[str] = Field(..., description="Name of the NFT")
     token_description: Optional[str] = Field(..., description="Description of the NFT")

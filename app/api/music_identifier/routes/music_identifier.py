@@ -11,9 +11,13 @@ logger = get_logger()
 
 
 @router.post("/train", response_model=MusicTrainResponse)
-async def train_music(music: Music, file: UploadFile = File(...)):
-    logger.info("Training music")
-    return await music_identifier.train_music(music, file)
+async def train_music(sound: bytes = File(...)):
+    try:
+        logger.info("Training music")
+        return await music_identifier.train_music(await sound.read())
+    except Exception as e:
+        logger.error(f"Error training music: {e}")
+        raise HTTPException(status_code=500, detail="Error training music")
 
 @router.post("/identify", response_model=MusicTrainResponse)
 async def identify_uploaded_music(music: Music, file: UploadFile = File(...)):

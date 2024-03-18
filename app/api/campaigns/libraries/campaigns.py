@@ -1,28 +1,61 @@
 from app.utils.response import CampaignCreateResponse, SingleCampaignResponse, AllCampaignResponse, InvestmentResponse
 from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew
-from app.utils.database import user_collection, campaign_collection
+from app.utils.database import marketplace_collection, user_collection, campaign_collection, nft_collection
 from bson import ObjectId
 from app.models.Campaigns import Campaigns, InvestersList
-
+from app.models.Marketplace import NFT
+import time
 
 # SECTION: FastAPI Create a new campaign
 async def create_campaign(campaign: Campaigns) -> CampaignsNew:
     campaign_data = campaign.dict()
-    result = campaign_collection.insert_one(campaign_data)
-    if result.inserted_id:
+    
+    artist_id = campaign_data['created_by']
+    user = user_collection.find_one({"_id": ObjectId(artist_id)})
+    
+    if user is None:
         return CampaignCreateResponse(
-            code=200,
-            response="Campaign created successfully",
-            data=CampaignsNew(
-                id=str(result.inserted_id),
-            )
+            code=404,
+            response="User not found",
+            data=None
         )
+    campaign_data["created_at"] = time.strftime("%Y-%m-%d")
+    campaign_data['creater_name'] = user['first_name'] + " " + user['last_name']
+    result = campaign_collection.insert_one(campaign_data)
+    
+    if result.inserted_id:
+        collection_data = {}
+        
+        collection_data['name'] = campaign_data['title']
+        collection_data['description'] = campaign_data['description']
+        collection_data['owner_id'] = artist_id
+        collection_data['owner_name'] = campaign_data['creater_name']
+        collection_data['floor'] = "12.9"
+        collection_data['volume'] = "125"
+        collection_data['campaign_id'] = str(result.inserted_id)
+            
+        result = marketplace_collection.insert_one(collection_data)
+        if result.inserted_id:
+            return CampaignCreateResponse(
+                code=200,
+                response="Campaign created successfully",
+                data=CampaignsNew(
+                    id=str(result.inserted_id),
+                )
+            )
+        else:
+            return CampaignCreateResponse(
+                code=404,
+                response="Campaign not created",
+                data=None
+            )
     else:
         return CampaignCreateResponse(
             code=404,
             response="Campaign not created",
             data=None
         )
+        
 # SECTION: End of FastAPI Create a new campaign
 
 # SECTION: Get Fastapi all campaigns
@@ -128,6 +161,20 @@ async def invest_campaign(campaign_id: str, investment_details: InvestersList) -
                     }
                 }
             )
+            
+            nft_data = NFT(
+                collection_id=str(result.inserted_id),
+                token_name="artist",
+                token_description="artist",
+                image="artist",
+                owner_id=artist_name,
+                current_owner_id=artist_name,
+                creation_date="2021-10-01",
+                royalties="12",
+                price="12",
+                status="active"
+            )
+            nfts = nft_collection.insert_one()
             return InvestmentResponse(
                 code=200,
                 response="Investment successful",

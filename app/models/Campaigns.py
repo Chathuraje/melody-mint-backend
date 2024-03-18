@@ -20,17 +20,16 @@ class Campaigns(BaseModel):
     distribution: Optional[int] = Field(..., description="Distribution of the campaign (%)")
     current_amount: Optional[float] = Field(..., description="Current amount of the campaign")
     created_by: Optional[str] = Field(..., description="Creatr ID of the campaign")
-    creater_name: Optional[str] = Field(..., description="Creater name of the campaign")
-    created_at: Optional[str] = Field(..., description="Created at of the campaign")
     geners: Optional[str] = Field(..., description="Geners of the campaign")
     is_active: Optional[str] = Field(..., description="Is active of the campaign")
     is_completed: Optional[str] = Field(..., description="Is completed of the campaign")
     status: Optional[str] = Field(..., description="Status of the campaign")
     investers: Optional[list[InvestersList]] = Field(..., description="Investers of the campaign")
-
     
 class CampaignsReturn(Campaigns):
     id: Optional[str] = Field(..., description="Unique ID of the campaigns")
+    created_at: Optional[str] = Field(..., description="Created at of the campaign")
+    creater_name: Optional[str] = Field(..., description="Creater name of the campaign")
     
 class CampaignsNew(BaseModel):
     id: Optional[str] = Field(..., description="Unique ID of the campaigns")
