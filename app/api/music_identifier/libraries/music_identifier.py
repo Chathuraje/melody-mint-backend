@@ -13,14 +13,13 @@ from bson import ObjectId
 
 from app.utils.logging import get_logger
 logger = get_logger()  
-    
-DB_FILE = "app/data/music.db"
-    
-conn = sqlite3.connect(DB_FILE)
-cur = conn.cursor()    
-UPLOAD_DIR = "app/temp/songs/"
 
 async def train_music(file, song_name, user_id):
+    DB_FILE = "app/data/music.db"
+    
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()    
+    UPLOAD_DIR = "app/temp/songs/"
     create_table()
     
     os.makedirs(UPLOAD_DIR, exist_ok=True)
