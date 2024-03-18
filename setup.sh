@@ -1,18 +1,18 @@
 #!/bin/bash
 
 # Stop services
-sudo systemctl stop melodymint_backend.service
+sudo -n systemctl stop melodymint_backend.service || true
 
 # Copy service files
-sudo cp melodymint_backend.service /etc/systemd/system/
+sudo -n cp melodymint_backend.service /etc/systemd/system/ || true
 
 # Reload systemctl daemon
-sudo systemctl daemon-reload
+sudo -n systemctl daemon-reload || true
 
 # Enable services
-sudo systemctl enable melodymint_backend.service
+sudo -n systemctl enable melodymint_backend.service || true
 
 # Start services
-sudo systemctl start melodymint_backend.service
+sudo -n systemctl start melodymint_backend.service || true
 
 echo "Setup completed."
