@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List, Any
+from typing import Optional, List
 
 class Music(BaseModel):
     title: Optional[str] = Field(..., description="Title of the music")

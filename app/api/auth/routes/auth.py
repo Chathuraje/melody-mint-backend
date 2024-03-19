@@ -4,7 +4,6 @@ from app.api.auth.libraries import auth
 from app.utils.response import UserRegisterResponse, UserLoginResponse, TokenResponse
 from app.models.Users import ChallengeReqeust, ChallengeResponse, User
 # from fastapi.security import OAuth2PasswordRequestForm
-import moralis
 
 setup_logger()
 logger = get_logger()
