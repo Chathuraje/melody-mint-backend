@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from app.api.root.main import router as root_routers
 from app.api.auth.main import router as auth_routers
 from app.api.users.main import router as users_routers

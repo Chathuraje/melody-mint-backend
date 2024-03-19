@@ -1,7 +1,6 @@
 from app.utils import logging
 from app.utils import config
 import assemblyai as aai
-import json
 
 
 logger = logging.get_logger()

@@ -1,6 +1,5 @@
 from pydantic import BaseModel, Field
 from typing import Optional
-from bson import ObjectId
 
 class Artist(BaseModel):
     profession: Optional[str] = Field(..., description="Profession of the artist")

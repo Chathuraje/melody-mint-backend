@@ -2,42 +2,18 @@ from app.utils.response import MusicTrainResponse, MusicResponseModel
 import datetime
 import time
 import os
-# from app.api.music_identifier.libraries import support
 from app.utils.database import music_collection, user_collection, song_fingerprints
 from app.models.MusicIdentifier import MusicNew, MusicResponse
 from bson import ObjectId
 from app.api.music_identifier.libraries import identify
 from app.api.music_identifier.libraries import train
 import hashlib
-# from app.api.music_identifier.libraries import assemblyai
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-import nltk
-nltk.download('stopwords')
-nltk.download('punkt')
+
 
 from app.utils.logging import get_logger
 logger = get_logger()  
     
 UPLOAD_DIR = "app/temp/songs/"
-
-def preprocess_text(text):
-    stop_words = set(stopwords.words('english'))
-    word_tokens = word_tokenize(text.lower())
-    filtered_text = [word for word in word_tokens if word.isalnum() and word not in stop_words]
-    return set(filtered_text)
-
-def calculate_normalized_similarity(original_text, new_text):
-    original_set = preprocess_text(' '.join(original_text))
-    new_set = preprocess_text(' '.join(new_text))
-    intersection = len(original_set.intersection(new_set))
-    union = len(original_set.union(new_set))
-    similarity = intersection / union if union != 0 else 0
-    # Normalize the similarity score
-    normalized_similarity = (similarity / len(original_text)) * 100
-    return normalized_similarity
 
 def calculate_song_hash(file_path):
     logger.info("Calculating Single hash for Song")

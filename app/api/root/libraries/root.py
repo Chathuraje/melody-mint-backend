@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from app.utils.response import StandardResponse, LogContent, ReadLogResponse
+from app.utils.response import LogContent, ReadLogResponse
 from app.utils.logging import setup_logger, get_logger
 import aiofiles
 import traceback

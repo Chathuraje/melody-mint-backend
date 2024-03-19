@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from app.utils.logging import get_logger
 from app.api.marketplace.libraries import marketplace
-from app.utils.response import CollectionCreateResponse, AllCollectionResponse, SingleCollectionResponse, NFTCreateResponse, AllNFTResponse, SingleNFTResponse
-from app.models.Marketplace import Collections, NFT, CollectionNew
+from app.utils.response import AllCollectionResponse, SingleCollectionResponse, NFTCreateResponse, AllNFTResponse, SingleNFTResponse
+from app.models.Marketplace import Collections, NFT
 
 
 router = APIRouter()

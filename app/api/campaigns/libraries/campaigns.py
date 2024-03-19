@@ -3,9 +3,7 @@ from app.models.Campaigns import Campaigns, CampaignsReturn, CampaignsNew, Inves
 from app.utils.database import marketplace_collection, user_collection, campaign_collection, nft_collection
 from bson import ObjectId
 from app.models.Campaigns import Campaigns, InvestersList
-from app.models.Marketplace import NFT
 import time
-import datetime
 
 # SECTION: FastAPI Create a new campaign
 async def create_campaign(campaign: Campaigns) -> CampaignsNew:

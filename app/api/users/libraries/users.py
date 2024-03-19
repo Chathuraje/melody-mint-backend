@@ -1,5 +1,5 @@
 from app.utils.response import IndividualUserResponse, AllUsersResponse
-from app.models.Users import User, Artist, UserReturn
+from app.models.Users import User, UserReturn
 from app.utils.database import user_collection
 from bson import ObjectId
 from app.utils.moralis import basic

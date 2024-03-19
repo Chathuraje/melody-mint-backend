@@ -1,8 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from app.utils.logging import setup_logger, get_logger
 from app.api.root.libraries import root
 from app.utils.response import StandardResponse, ReadLogResponse
-from fastapi.responses import StreamingResponse
 
 setup_logger()
 logger = get_logger()

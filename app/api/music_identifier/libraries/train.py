@@ -2,7 +2,6 @@ import os
 import eyed3
 from app.api.music_identifier.libraries.libs.parse_audio import parse_bytes
 from app.api.music_identifier.libraries.libs.generate_fingerprint import fingerprint
-from app.api.music_identifier.libraries.libs.db import get_conn
 from app.utils.logging import get_logger
 from app.api.music_identifier.libraries import identify
 from app.utils.database import music_collection, song_fingerprints

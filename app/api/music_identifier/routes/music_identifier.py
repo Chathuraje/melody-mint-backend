@@ -2,9 +2,6 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, Form
 from app.utils.logging import get_logger
 from app.api.music_identifier.libraries import music_identifier
 from app.utils.response import MusicTrainResponse, MusicIdentifierResponse, MusicResponseModel
-from app.models.MusicIdentifier import MusicResponse
-
-
 
 router = APIRouter()
 logger = get_logger()

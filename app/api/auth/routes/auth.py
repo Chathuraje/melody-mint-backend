@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter
 from app.utils.logging import setup_logger, get_logger
 from app.api.auth.libraries import auth
 from app.utils.response import UserRegisterResponse, UserLoginResponse, TokenResponse
-from app.models.Users import UserLogin, Token, ChallengeReqeust, ChallengeResponse, User
+from app.models.Users import ChallengeReqeust, ChallengeResponse, User
 # from fastapi.security import OAuth2PasswordRequestForm
 import moralis
 

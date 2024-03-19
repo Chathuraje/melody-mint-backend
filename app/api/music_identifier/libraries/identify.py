@@ -1,7 +1,6 @@
 import numpy as np
 from app.utils import config
 from app.api.music_identifier.libraries.libs.find_match import find_matches
-from app.api.music_identifier.libraries.libs.db import get_conn
 import os
 from pydub import AudioSegment
 from app.utils.logging import get_logger
@@ -55,8 +54,6 @@ def identify_from_file(audio_file):
 
     if identified_songs:
         song_id = max(identified_songs, key=identified_songs.get)
-        conn, cur = get_conn()
-        
         musics = music_collection.find_one({"_id": ObjectId(song_id)})
         
         if musics:

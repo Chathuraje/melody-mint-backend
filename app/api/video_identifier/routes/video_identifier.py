@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File
 from app.utils.logging import get_logger
 from app.api.video_identifier.libraries import video_identifier
 from app.utils.response import VideoTrainResponse

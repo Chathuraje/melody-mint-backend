@@ -2,9 +2,7 @@ from app.utils.response import UserLoginResponse, UserRegisterResponse, TokenRes
 from app.models.Users import UserReturnID, UserReturn, Token, ChallengeReqeust, ChallengeResponse, User
 from app.utils.logging import setup_logger, get_logger
 from app.utils.database import user_collection
-from fastapi import HTTPException, Request
 from app.utils.auth import jwt
-from moralis import evm_api
 from app.utils import config
 import json
 from datetime import datetime, timedelta, timezone

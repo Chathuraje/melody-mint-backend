@@ -1,7 +1,6 @@
 from app.api.music_identifier.libraries.libs.generate_fingerprint import fingerprint
 from app.utils import config
 from itertools import zip_longest
-from app.api.music_identifier.libraries.libs.db import get_conn
 import math
 from app.utils.logging import get_logger
 import pandas as pd
@@ -39,8 +38,6 @@ def find_matches(channel, sampling_rate=config.DEFAULT_SAMPLING_RATE):
     if values is None:
         logger.info("no values")
     else:
-        conn, cur = get_conn()
-
         counter = 0
         logger.info(f"Taking step length of {config.MATCH_STEP_LENGTH}")
         for split_values in grouper(values, config.MATCH_STEP_LENGTH):
@@ -60,8 +57,6 @@ def find_matches(channel, sampling_rate=config.DEFAULT_SAMPLING_RATE):
 
             for index, row in matched_data.iterrows():
                 yield row['song_id']
-
-        cur.close()
 
 
 def grouper(iterable, n, fill_value=None):
