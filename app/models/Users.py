@@ -43,7 +43,7 @@ class TokenData(BaseModel):
     
 class ChallengeReqeust(BaseModel):
     address: str = Field(..., description="Wallet address of the user")
-    chainId: str = Field(..., description="Chain of the user")
+    chainId: int = Field(..., description="Chain of the user")
     network: str = Field(..., description="Network of the user")
     
 class ChallengeResponse(BaseModel):
