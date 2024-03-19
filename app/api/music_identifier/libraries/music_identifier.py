@@ -2,14 +2,14 @@ from app.utils.response import MusicTrainResponse, MusicResponseModel
 import datetime
 import time
 import os
-from app.api.music_identifier.libraries import support
+# from app.api.music_identifier.libraries import support
 from app.utils.database import music_collection, user_collection
 from app.models.MusicIdentifier import MusicNew, MusicResponse
 from bson import ObjectId
 from app.api.music_identifier.libraries import identify
 from app.api.music_identifier.libraries import train
 import hashlib
-from app.api.music_identifier.libraries import assemblyai
+# from app.api.music_identifier.libraries import assemblyai
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
