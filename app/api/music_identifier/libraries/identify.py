@@ -5,6 +5,10 @@ from app.api.music_identifier.libraries.libs.db import get_conn
 import os
 from pydub import AudioSegment
 from app.utils.logging import get_logger
+from bson import ObjectId
+
+from app.utils.database import music_collection
+
 
 logger = get_logger()  
 
@@ -43,30 +47,32 @@ def identify_from_file(audio_file):
 
     identified_songs = {}
     if len(matches) > 0:
-        for item in matches:
-            title = str(item[0])
-            if title in identified_songs.keys():
-                identified_songs[title] += 1
+        for song_id  in matches:
+            if song_id in identified_songs.keys():
+                identified_songs[song_id] += 1
             else:
-                identified_songs[title] = 1
+                identified_songs[song_id] = 1
 
+    if identified_songs:
         song_id = max(identified_songs, key=identified_songs.get)
         conn, cur = get_conn()
-
-        cur.execute("SELECT title, hash FROM songs WHERE id=%s", song_id)
-
-        song_details = cur.fetchall()
-
-        prob = (identified_songs[song_id] / len(matches)) * 100
-        logger.info(f"Probability of song: {prob}%")
-        if prob > 25:
-            logger.info(f"Total Identified songs = {len(identified_songs)}")
-            title= song_details[0][0]
-            song_hash = song_details[0][1]
-            propability = prob
-            logger.info(f"Best hit -> Title: {title} with {propability}% confidence")
-            
-            return title, propability, song_hash
+        
+        musics = music_collection.find_one({"_id": ObjectId(song_id)})
+        
+        if musics:
+            prob = (identified_songs[song_id] / len(matches)) * 100
+            logger.info(f"Probability of song: {prob}%")
+            if prob > 25:
+                logger.info(f"Total Identified songs = {len(identified_songs)}")
+                title= musics["title"]
+                song_hash = musics["hash"]
+                propability = prob
+                logger.info(f"Best hit -> Title: {title} with {propability}% confidence")
+                
+                return title, propability, song_hash
+            else:
+                logger.info("No Song Found")
+                return None
         else:
             logger.info("No Song Found")
             return None

@@ -4,6 +4,10 @@ from itertools import zip_longest
 from app.api.music_identifier.libraries.libs.db import get_conn
 import math
 from app.utils.logging import get_logger
+import pandas as pd
+
+from app.utils.database import song_fingerprints
+
 
 logger = get_logger()  
 
@@ -41,29 +45,21 @@ def find_matches(channel, sampling_rate=config.DEFAULT_SAMPLING_RATE):
         logger.info(f"Taking step length of {config.MATCH_STEP_LENGTH}")
         for split_values in grouper(values, config.MATCH_STEP_LENGTH):
             counter += 1
-            query = '''
-            SELECT upper(hash), song_id
-            FROM fingerprints
-            WHERE upper(hash) IN (%s)
-            '''
-            split_values = list(split_values)
-            lis = ['%s'] * len(split_values)
-            query = query % ', '.join(lis)
-
-            x = cur.execute(query, split_values)
-            val = ()
-            if x > 0:
-                val = cur.fetchall()
-
-            matches_found = len(val)
+            
+            fingerprint_data = list(song_fingerprints.find())
+            fingerprint_df = pd.DataFrame(fingerprint_data)
+            
+            matched_data = fingerprint_df[fingerprint_df['hash'].str.upper().isin(split_values)]
+            
+            matches_found = len(matched_data)
             if matches_found > 0:
                 
                 logger.info(f"Found {matches_found} hash matches at step {counter}/{math.ceil(len(values)/config.MATCH_STEP_LENGTH)}")
             else:
                 logger.info(f"No hash matches found at step {counter}/{math.ceil(len(values)/config.MATCH_STEP_LENGTH)}")
 
-            for hashs, song_id in val:
-                yield [song_id]
+            for index, row in matched_data.iterrows():
+                yield row['song_id']
 
         cur.close()
 

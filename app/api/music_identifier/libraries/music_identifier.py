@@ -3,7 +3,7 @@ import datetime
 import time
 import os
 # from app.api.music_identifier.libraries import support
-from app.utils.database import music_collection, user_collection
+from app.utils.database import music_collection, user_collection, song_fingerprints
 from app.models.MusicIdentifier import MusicNew, MusicResponse
 from bson import ObjectId
 from app.api.music_identifier.libraries import identify
@@ -68,46 +68,47 @@ async def train_music(file, song_name, user_id):
         buffer.write(file.file.read())
         
     song_hash = calculate_song_hash(file_path)
-    music = music_collection.find_one({"hash": song_hash})
+    music_details = {
+        'title': str(song_name),
+        'user_id': str(user_id),
+        'type': 'music',
+        'total_stream': '0',
+        'total_platform': '1',
+        'total_time': '0',
+        'hash': song_hash,
+        'platform_details': [
+            {
+                'platform_name': 'Radio King',
+                'stream_count': '0',
+                'records': []
+            }
+        ]
+    }
     
-    if music is None:
-        status = train.create_finger_prints(file_path, song_hash, song_name)
-        music_details = {}
+    musics = music_collection.find_one({"hash": song_hash})
+    if musics:
+        musics_id= musics["_id"]
+    else:
+        musics = music_collection.insert_one(music_details)
+        musics_id = musics.inserted_id
+    
+    count = song_fingerprints.count_documents({"song_id": musics_id})
+    logger.info(f"Sum of the count: {count}")
+    
+    if count == 0:
+        logger.info("No Fingerprints Found. Start Training Process")
+        music_id = train.create_finger_prints(file_path, musics_id)
         
-        if status:
-            # transcript = assemblyai.generate_transcript(file_path)
-            # if transcript is not None:
-            #     music_details['transcript'] = transcript
-                    
-            platform_name = "Radio King"
-            music_details['title'] = str(song_name)
-            music_details['user_id'] = str(user_id)
-            music_details['type'] = 'music'
-            music_details['total_stream'] = "0"
-            music_details['total_platform'] = "1"
-            music_details['total_time'] = "0"
-            music_details['hash'] = song_hash
-            
-            
-            platform_records = [
-                {
-                    'platform_name': platform_name,
-                    'stream_count': "0",
-                    'records': []
-                }
-            ]
-            music_details['platform_details'] = platform_records
-            
-            musics = music_collection.insert_one(music_details)
+        if music_id:
             return MusicTrainResponse(
                 code=200,
                 response="Music Trained",
-                data=MusicNew(id=str(musics.inserted_id))
+                data=MusicNew(id=str(music_id))
             )
         else:
             return MusicTrainResponse(
                 code=404,
-                response="Music Already Trained or Error Occured",
+                response="Error Occured Music does not trained",
                 data=None
             )
     else:
@@ -135,53 +136,32 @@ async def identify_music(file, platform_name="Radio King"):
         )
     else:
         title, similarity, song_hash = song_identification
-        music = music_collection.find_one({"hash": song_hash})
         if similarity > 25:
+            music = music_collection.find_one({"hash": song_hash})
             if music:
-                original_transcript = music['transcript']
-                # new_transcript = assemblyai.generate_transcript(file_path)
-                # if new_transcript is not None:
-                    # similarity = calculate_normalized_similarity(original_transcript, new_transcript)
-                if True:
-                    logger.info(f"Transcript Similarity:  {similarity}")
-                    if similarity > 25:
-                        song_id = music['_id'] 
-                        platform_records = music['platform_details']
-                        for platform in platform_records:
-                            if platform['platform_name'] == platform_name:
-                                platform['stream_count'] = str(int(platform['stream_count']) + 1)
-                                platform['records'].append({
-                                    'date': datetime.datetime.now().strftime("%Y-%m-%d"),
-                                    'time': datetime.datetime.now().strftime("%H:%M:%S"),
-                                    'duration': "0"
-                                })
-                                music_collection.update_one({"_id": ObjectId(song_id)}, {"$set": {"platform_details": platform_records}})
+                song_id = music['_id'] 
+                platform_records = music['platform_details']
+                for platform in platform_records:
+                    if platform['platform_name'] == platform_name:
+                        platform['stream_count'] = str(int(platform['stream_count']) + 1)
+                        platform['records'].append({
+                            'date': datetime.datetime.now().strftime("%Y-%m-%d"),
+                            'time': datetime.datetime.now().strftime("%H:%M:%S"),
+                            'duration': "0"
+                        })
+                        music_collection.update_one({"_id": ObjectId(song_id)}, {"$set": {"platform_details": platform_records}})
                                 
-                                music_outer = music_collection.find_one({"_id": ObjectId(song_id)})
-                                music_outer['total_stream'] = str(int(music_outer['total_stream']) + 1)
-                                music_collection.update_one({"_id": ObjectId(song_id)}, {"$set": music_outer})
-                                logger.info(f"100% Music Identifed: {title}")
-                                return MusicTrainResponse(
-                                    code=200,
-                                    response="Music Identified",
-                                    data=MusicNew(id=str(song_id))
-                                )
-                            else:
-                                logger.info("Platform Not Found")
-                    else:
-                        logger.info("Transcript Not Matched, Music Not Identified")
+                        music_outer = music_collection.find_one({"_id": ObjectId(song_id)})
+                        music_outer['total_stream'] = str(int(music_outer['total_stream']) + 1)
+                        music_collection.update_one({"_id": ObjectId(song_id)}, {"$set": music_outer})
+                        logger.info(f"100% Music Identifed: {title}")
                         return MusicTrainResponse(
-                            code=404,
-                            response="Music Not Identified",
-                            data=None
+                            code=200,
+                            response="Music Identified",
+                            data=MusicNew(id=str(song_id))
                         )
-                else:
-                    logger.info("Transcript Not Found, Music Not Identified")
-                    return MusicTrainResponse(
-                        code=404,
-                        response="Music Not Identified",
-                        data=None
-                    )
+                    else:
+                        logger.info("Platform Not Found")
             else:
                 logger.info("Music Not Found")
                 return MusicTrainResponse(
