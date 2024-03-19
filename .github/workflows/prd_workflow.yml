@@ -35,7 +35,11 @@ jobs:
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
           echo "JWT_ALGORITHM=${{ secrets.JWT_ALGORITHM }}" >> .env
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-          echo "MORALIS_API_KEY=${{ secrets.MORALIS_API_KEY }}" >> .env
+          echo "AUDD_API_KEY=${{ secrets.AUDD_API_KEY }}" >> .env
+          echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
+          echo "MYSQL_PORT=${{ secrets.MYSQL_PORT }}" >> .env
+          echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
+          echo "MYSQL_DB=${{ secrets.MYSQL_DB }}" >> .env
 
 
       - name: Run Update Services
