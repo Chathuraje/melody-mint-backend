@@ -20,11 +20,8 @@ nltk.download('punkt')
 
 from app.utils.logging import get_logger
 logger = get_logger()  
-<<<<<<< HEAD
-=======
     
 UPLOAD_DIR = "app/temp/songs/"
->>>>>>> development
 
 def preprocess_text(text):
     stop_words = set(stopwords.words('english'))
@@ -53,14 +50,6 @@ def calculate_song_hash(file_path):
     
     
 async def train_music(file, song_name, user_id):
-<<<<<<< HEAD
-    DB_FILE = "app/data/music.db"
-    
-    conn = sqlite3.connect(DB_FILE)
-    cur = conn.cursor()    
-    UPLOAD_DIR = "app/temp/songs/"
-    create_table()
-=======
     user = user_collection.find_one({"_id": ObjectId(user_id)})
     if user is None:
         return MusicTrainResponse(
@@ -69,7 +58,6 @@ async def train_music(file, song_name, user_id):
             data=None
         )
     
->>>>>>> development
     
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     
