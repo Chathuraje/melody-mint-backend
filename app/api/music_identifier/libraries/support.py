@@ -10,7 +10,7 @@ import os
 
 AUDD_API_KEY = config.AUDD_API_KEY
 
-def find_musics_in_the_audio(mp3_file_path):
+def get_song_meta(mp3_file_path):
     results = []
     endpoint = 'https://api.audd.io/recognize'
     data = {

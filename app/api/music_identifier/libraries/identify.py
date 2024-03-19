@@ -22,10 +22,10 @@ def identify_from_file(audio_file):
 
     if not os.path.exists(audio_file):
         logger.info("Audio file not found")
-        return None, None
+        return None
 
     audio = AudioSegment.from_file(audio_file)
-    temp_folder = "/app/temp/temp.wav"
+    temp_folder = "app/temp/temp.wav"
     audio.export(temp_folder, format="wav")  # Convert to WAV format
     frames = [open(temp_folder, "rb").read()]
 
@@ -53,17 +53,25 @@ def identify_from_file(audio_file):
         song_id = max(identified_songs, key=identified_songs.get)
         conn, cur = get_conn()
 
-        cur.execute("SELECT title FROM songs WHERE id=%s", song_id)
+        cur.execute("SELECT title, hash FROM songs WHERE id=%s", song_id)
 
         song_details = cur.fetchall()
 
         prob = (identified_songs[song_id] / len(matches)) * 100
-
-        logger.info(f"Total Identified songs = {len(identified_songs)}")
-        title= song_details[0][0]
-        propability = prob
-        logger.info(f"Best hit -> Title: {title} with {propability}% confidence")
-        
-        return title, propability
+        logger.info(f"Probability of song: {prob}%")
+        if prob > 25:
+            logger.info(f"Total Identified songs = {len(identified_songs)}")
+            title= song_details[0][0]
+            song_hash = song_details[0][1]
+            propability = prob
+            logger.info(f"Best hit -> Title: {title} with {propability}% confidence")
+            
+            return title, propability, song_hash
+        else:
+            logger.info("No Song Found")
+            return None
+    else:
+        logger.info("No Song Found")
+        return None
 
     os.remove(temp_folder)

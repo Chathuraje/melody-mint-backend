@@ -4,6 +4,7 @@ from app.api.music_identifier.libraries.libs.parse_audio import parse_bytes
 from app.api.music_identifier.libraries.libs.generate_fingerprint import fingerprint
 from app.api.music_identifier.libraries.libs.db import get_conn
 from app.utils.logging import get_logger
+from app.api.music_identifier.libraries import identify
 
 logger = get_logger()  
 
@@ -38,17 +39,18 @@ def get_tags(file):
     return song
 
 
-def create_finger_prints(mp3_file_path, song_id):
+def create_finger_prints(mp3_file_path, song_hash, song_name):
 
     conn, cur = get_conn()
     song = parse_bytes(mp3_file_path, offline=True)
-    check = cur.execute("SELECT id FROM songs WHERE title=%s", song_id)
+    check = cur.execute("SELECT id FROM songs WHERE hash=%s", song_hash)
     if check > 0:
         logger.info("Skipping File... Fingerprint already available...")
+        return False
     else:
-        cur.execute("INSERT INTO songs(title) VALUES(%s)", song_id)
+        cur.execute("INSERT INTO songs(title, hash) VALUES(%s, %s)", [song_name, song_hash])
         conn.commit()
-        logger.info(f"Fingerprinting song: {song_id}")
+        logger.info(f"Fingerprinting song: {song_name}")
         hashes = set()
         channel_amount = len(song['channels'])
         for channel_number, channel in enumerate(song['channels']):
@@ -60,12 +62,12 @@ def create_finger_prints(mp3_file_path, song_id):
             hashes |= channel_hashes
 
         values = []
-        check = cur.execute("SELECT id FROM songs WHERE title=%s", song_id)
+        check = cur.execute("SELECT id FROM songs WHERE hash=%s", song_hash)
         rows = cur.fetchall()
         for h, offset in hashes:
             values.append((rows[0][0], h, int(offset)))
 
-        logger.info(f"Got {len(values)} hashes for {song_id}")
+        logger.info(f"Got {len(values)} hashes for {song_name}")
         if len(values) > 0:
             logger.info("Done")
             cur.executemany(
@@ -73,5 +75,9 @@ def create_finger_prints(mp3_file_path, song_id):
                 values
             )
             conn.commit()
+            return True
+            
 
     cur.close()
+    return False
+    
