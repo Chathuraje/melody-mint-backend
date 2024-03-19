@@ -35,6 +35,7 @@ async def request_challenge(request: ChallengeReqeust):
         headers={'X-API-KEY': config.MORALIS_API_KEY}
     )
     
+    
     return json.loads(response.text)
 
 

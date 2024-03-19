@@ -7,7 +7,10 @@ from app.utils import startup
 
 app = FastAPI()
 
-origins = ['*']
+origins = [
+    "https://chathuraje.github.io/melody-mint-frontend/",
+    "http://localhost:4200"
+]
 
 app.add_middleware(
     CORSMiddleware,
