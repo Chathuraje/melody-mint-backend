@@ -1,21 +1,22 @@
 from fastapi import APIRouter
-from app.utils.logging import setup_logger, get_logger
+from app.utils import logging
 from app.api.root.libraries import root
-from app.utils.response import StandardResponse, ReadLogResponse
 
-setup_logger()
-logger = get_logger()
-
-
+logger = logging.getLogger()
 router = APIRouter()
 
-@router.get("/", response_model=StandardResponse)
+
+@router.get("/", description="This is the root endpoint.")
 async def read_root():
     logger.info("Root endpoint accessed.")
-    return StandardResponse(code=200, data="Hello, this is your FastAPI application!")
 
-@router.get("/read-log", response_model=ReadLogResponse)
-async def read_log(limit: int = None):
+    return await root.read_root()
+
+
+@router.get(
+    "/read-log", description="This is to read the log file.", response_model=list[str]
+)
+async def read_log(limit: int = None):  # type: ignore
     logger.info("Read log endpoint accessed.")
-    
+
     return await root.read_log(limit)

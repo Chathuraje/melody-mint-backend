@@ -1,25 +1,29 @@
 from fastapi import HTTPException
-from app.utils.response import LogContent, ReadLogResponse
-from app.utils.logging import setup_logger, get_logger
+from app.utils import logging
 import aiofiles
 import traceback
-from collections import deque 
+from collections import deque
 
-setup_logger()
-logger = get_logger()
+logger = logging.getLogger()
 
 
-# SECTION: FastAPI Logs
-async def read_log(limit) -> ReadLogResponse:
+# ROUTE: Root Path
+async def read_root():
+    logger.info("Root endpoint accessed.")
+    return "Hello World"
+
+
+# ROUTE: FastAPI Logs
+async def read_log(limit):
     try:
-        async with aiofiles.open("melodymint.log", "r") as log_file:
+        async with aiofiles.open("system.log", "r") as log_file:
             if limit is None or limit < 0:
-                 log_content = [line.strip() async for line in log_file]
+                log_content = [line.strip() async for line in log_file]
             else:
                 log_content = deque(await log_file.readlines(), maxlen=limit)
                 log_content = list(log_content)
-                
-        return ReadLogResponse(code=200, data=LogContent(logs=log_content))
+
+            return log_content
 
     except FileNotFoundError as e:
         logger.error(f"Log file not found: {e}")
@@ -27,4 +31,7 @@ async def read_log(limit) -> ReadLogResponse:
     except Exception as e:
         tb = traceback.format_exc()
         logger.error(f"Error while reading log file: {e}\nTraceback: {tb}")
-        raise HTTPException(status_code=500, detail=f"Error while reading log file: {e}\nTraceback: {tb}") from e
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error while reading log file: {e}\nTraceback: {tb}",
+        ) from e

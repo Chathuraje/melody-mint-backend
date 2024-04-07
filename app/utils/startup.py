@@ -1,9 +1,12 @@
 from app.utils import logging
+from app.utils.database import connect
 
 
 async def startup_event():
-    logging.setup_logger()
-    logger = logging.get_logger()
-    
-    STAGE = "DEVELOPMENT"
-    logger.info(f"Running...: MODE - {STAGE}")
+    logging.setupLogger()
+    logger = logging.getLogger()
+
+    # Connect to MongoDB
+    await connect()
+
+    logger.info(f"Melody Mint FastAPI running....")

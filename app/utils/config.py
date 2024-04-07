@@ -1,47 +1,15 @@
 import os
 from dotenv import load_dotenv
-import pyaudio
 
 load_dotenv()
 
-DB_URL = os.getenv("DB_URL")
-DB_USERNAME = os.getenv("DB_USERNAME")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_NAME = os.getenv("DB_NAME")
+DB_URL: str = os.getenv("DB_URL")  # type: ignore
+DB_USERNAME: str = os.getenv("DB_USERNAME")  # type: ignore
+DB_PASSWORD: str = os.getenv("DB_PASSWORD")  # type: ignore
+DB_NAME: str = os.getenv("DB_NAME")  # type: ignore
 
-JWT_SECRET=os.getenv("JWT_SECRET")
-JWT_ALGORITHM=os.getenv("JWT_ALGORITHM")
+JWT_SECRET: str = os.getenv("JWT_SECRET")  # type: ignore
+JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM")  # type: ignore
+JWT_EXPIRY_MINUTES: int = int(os.getenv("JWT_EXPIRY_MINUTES"))  # type: ignore
 
-MORALIS_API_KEY=os.getenv("MORALIS_API_KEY")
-
-AUDD_API_KEY=os.getenv("AUDD_API_KEY")
-
-
-MYSQL_HOST=os.getenv("MYSQL_HOST")
-MYSQL_PORT=int(os.getenv("MYSQL_PORT"))
-MYSQL_USER=os.getenv("MYSQL_USER")
-MYSQL_PASSWORD=os.getenv("MYSQL_PASSWORD")
-MYSQL_DB=os.getenv("MYSQL_DB")
-
-ASSEMBLYAI_API_KEY=os.getenv("ASSEMBLYAI_API_KEY")
-
-IDX_FREQ_I = 0
-IDX_TIME_J = 1
-DEFAULT_SAMPLING_RATE = 44100
-DEFAULT_WINDOW_SIZE = 4096
-DEFAULT_OVERLAP_RATIO = 0.5
-DEFAULT_FAN_VALUE = 15
-DEFAULT_AMP_MIN = 10
-PEAK_NEIGHBORHOOD_SIZE = 20
-MIN_HASH_TIME_DELTA = 0
-MAX_HASH_TIME_DELTA = 200
-PEAK_SORT = True
-FINGERPRINT_REDUCTION = 20
-DEFAULT_CHUNK_SIZE = 8192
-DEFAULT_FORMAT = pyaudio.paInt16
-DEFAULT_RATE = 44100
-DEFAULT_CHANNELS = 1
-RECORD_SECONDS = 5
-DEFAULT_OUT_NAME = "OUTPUT.wav"
-
-MATCH_STEP_LENGTH = 500
+MORALIS_API_KEY: str = os.getenv("MORALIS_API_KEY")  # type: ignore

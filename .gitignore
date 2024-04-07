@@ -156,7 +156,7 @@ cython_debug/
 .vscode
 
 # Non used Codes
-trash
+.trash
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

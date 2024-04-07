@@ -1,37 +1,64 @@
-from fastapi import APIRouter
-from app.utils.logging import setup_logger, get_logger
+from datetime import datetime, timedelta, timezone
+from typing import Annotated
+from fastapi import APIRouter, Depends, HTTPException, security
+from app.api.auth.utils.authentication import get_current_user
+from app.model.User import UserProfile, UserCreateResponse
+from app.utils import logging
 from app.api.auth.libraries import auth
-from app.utils.response import UserRegisterResponse, UserLoginResponse, TokenResponse
-from app.models.Users import ChallengeReqeust, ChallengeResponse, User
-# from fastapi.security import OAuth2PasswordRequestForm
+from app.model.Auth import (
+    ChallengeReqeust,
+    ChallengeResponse,
+    Token,
+    TokenData,
+    VerificationRequest,
+    VerificationResponse,
+)
 
-setup_logger()
-logger = get_logger()
 
+logger = logging.getLogger()
 router = APIRouter()
 
-@router.post("/login/{wallet_id}", response_model=UserLoginResponse)
-async def login(wallet_id):
-    logger.info("Login endpoint accessed.")
-    return await auth.login(wallet_id)
+user_dependacy = Annotated[dict, Depends(get_current_user)]
 
-@router.post("/register", response_model=UserRegisterResponse)
-async def register(user_data: User):
-    logger.info("Register endpoint accessed.")
-    return await auth.register(user_data)
 
-# @router.post("/token", response_model=TokenResponse)
-# async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-#     logger.info("Login for access token")
-#     return await auth.login_for_access_token(form_data)
-    
-@router.post("/request_challenge")
+@router.post(
+    "/request_challenge",
+    description="Request a challenge to Authenticate with Web3",
+    response_model=ChallengeResponse,
+)
 async def request_challenge(request: ChallengeReqeust):
-    logger.info("Request message endpoint accessed.")
+    logger.info("Web3 Request Challenge endpoint accessed")
+
     return await auth.request_challenge(request)
 
 
-@router.post("/verify_challenge")
-async def verify_message(request: ChallengeResponse):
+@router.post(
+    "/verify_challenge",
+    description="Verify the challenge to Authenticate with Web3",
+    response_model=VerificationResponse,
+)
+async def verify_message(request: VerificationRequest):
     logger.info("Verify message endpoint accessed.")
+
     return await auth.verify_message(request)
+
+
+@router.post("/token", response_model=Token)
+async def login_for_access_token(
+    moralis_id: str, wallet_address: str, signature: str, chain_id: int
+):
+    logger.info("Generate token endpoint accessed.")
+
+    token_data = TokenData(
+        moralis_id=moralis_id,
+        wallet_address=wallet_address,
+        signature=signature,
+        chain_id=chain_id,
+    )
+
+    return await auth.login_for_access_token(token_data)
+
+
+@router.get("/protected_route")
+async def protected_route(user: user_dependacy):
+    return user
