@@ -47,7 +47,13 @@ async def request_challenge(request: ChallengeReqeust) -> ChallengeResponse:
     }
 
     response = requests.post(
-        REQUEST_URL, json=request_object, headers={"X-API-KEY": MORALIS_API_KEY}
+        REQUEST_URL,
+        json=request_object,
+        headers={
+            "accept": "application/json",
+            "content-type": "application/json",
+            "X-API-KEY": MORALIS_API_KEY,
+        },
     )
 
     return ChallengeResponse(**json.loads(response.text))
@@ -60,7 +66,11 @@ async def verify_message(request: VerificationRequest) -> VerificationResponse:
     response = requests.post(
         REQUEST_URL,
         json={"message": request.message, "signature": request.signature},
-        headers={"X-API-KEY": MORALIS_API_KEY},
+        headers={
+            "accept": "application/json",
+            "content-type": "application/json",
+            "X-API-KEY": MORALIS_API_KEY,
+        },
     )
 
     if response.status_code == 201:  # user can authenticate

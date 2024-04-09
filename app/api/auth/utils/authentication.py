@@ -4,7 +4,8 @@ from fastapi import Depends, HTTPException, security
 from jose import JWTError, jwt
 from app.api.user.utils.UserDbController import get_user_by_wallet_address
 from app.model.Auth import TokenData
-from app.utils.config import JWT_ALGORITHM, JWT_EXPIRY_MINUTES, JWT_SECRET
+from app.model.User import UserResponse
+from app.utils.config import JWT_ALGORITHM, MORALIS_API_KEY, JWT_SECRET
 
 
 oauth2_bearer = security.OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
@@ -12,9 +13,15 @@ oauth2_bearer = security.OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
 # TODO: Try to add better authentication mechanism
 async def authenticate_user(token_data: TokenData):
-    user = await get_user_by_wallet_address(
+    user: UserResponse | None = await get_user_by_wallet_address(
         token_data.wallet_address, token_data.chain_id
     )
+
+    if user is None:
+        return None
+
+    if user.moralis_id != token_data.moralis_id:
+        return None
 
     return user
 
