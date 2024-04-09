@@ -36,12 +36,13 @@ class VerificationResponse(BaseModel):
     last_name: Optional[str] = Field(None, description="Last name of the user")
 
 
-class Token(BaseModel):
+class TokenResponse(BaseModel):
     access_token: str = Field(..., description="JWT access token")
     token_type: str = Field(..., description="Type of token")
 
 
 class TokenData(BaseModel):
+    id: str = Field(None, description="Unique identifier for the user")
     moralis_id: str = Field(..., description="Moralis ID of the user")
     wallet_address: str = Field(..., description="Wallet address of the user")
     signature: str = Field(..., description="Signature of the user")

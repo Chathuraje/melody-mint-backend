@@ -34,6 +34,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     )
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        id = payload.get("id")
         moralis_id = payload.get("moralis_id")
         wallet_address = payload.get("wallet_address")
         signature = payload.get("signature")
@@ -44,10 +45,12 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
             or wallet_address is None
             or signature is None
             or chain_id is None
+            or id is None
         ):
             raise credentials_exception
 
         token_data = TokenData(
+            id=id,
             moralis_id=moralis_id,
             signature=signature,
             chain_id=chain_id,
@@ -64,7 +67,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     return user
 
 
-def create_access_token(data: dict, expires_delta: timedelta):
+def create_access_token(data: dict, expires_delta: timedelta) -> str:
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + expires_delta
     to_encode.update({"exp": expire})

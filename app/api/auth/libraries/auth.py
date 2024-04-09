@@ -1,17 +1,16 @@
 import traceback
-from typing import Annotated
-from fastapi import Depends, HTTPException, security
+from fastapi import HTTPException
 from app.api.auth.utils.authentication import authenticate_user, create_access_token
 from app.api.user.utils import UserDbController
 from app.model.Auth import (
     ChallengeReqeust,
     ChallengeResponse,
-    Token,
+    TokenResponse,
     TokenData,
     VerificationRequest,
     VerificationResponse,
 )
-from app.model.User import UserProfile, UserResponse
+from app.model.User import UserProfile
 from app.utils.config import (
     JWT_EXPIRY_MINUTES,
     MORALIS_API_KEY,
@@ -22,7 +21,6 @@ from datetime import datetime, timedelta, timezone
 import requests
 import json
 from app.utils import logging
-from app.utils.database import get_collection
 
 logger = logging.getLogger()
 
@@ -104,14 +102,18 @@ async def verify_message(request: VerificationRequest) -> VerificationResponse:
                     detail=f"Error while creating user: {e}\nTraceback: {tb}",
                 ) from e
 
-        jwt_user = {
-            "moralis_id": profile_id,
-            "wallet_address": address,
-            "signature": signature,
-        }
+        jwt_user = TokenData(
+            id=user.id,
+            moralis_id=profile_id,
+            wallet_address=address,
+            signature=signature,
+            chain_id=chain_id,
+        )
 
         access_token_expires = timedelta(minutes=JWT_EXPIRY_MINUTES)
-        token = create_access_token(jwt_user, expires_delta=access_token_expires)
+        token = create_access_token(
+            jwt_user.model_dump(), expires_delta=access_token_expires
+        )
 
         logger.info(f"User {address} authenticated. Profile ID: {profile_id}")
 
@@ -159,4 +161,4 @@ async def get_access_token(token_data: TokenData):
         expires_delta=access_token_expires,
     )
 
-    return Token(access_token=access_token, token_type="bearer")
+    return TokenResponse(access_token=access_token, token_type="bearer")

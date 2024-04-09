@@ -1,14 +1,12 @@
-from datetime import datetime, timedelta, timezone
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, security
+from fastapi import APIRouter, Depends
 from app.api.auth.utils.authentication import get_current_user
-from app.model.User import UserProfile
 from app.utils import logging
 from app.api.auth.libraries import auth
 from app.model.Auth import (
     ChallengeReqeust,
     ChallengeResponse,
-    Token,
+    TokenResponse,
     TokenData,
     VerificationRequest,
     VerificationResponse,
@@ -18,7 +16,7 @@ from app.model.Auth import (
 logger = logging.getLogger()
 router = APIRouter()
 
-user_dependacy = Annotated[dict, Depends(get_current_user)]
+protected_user = Annotated[dict, Depends(get_current_user)]
 
 
 @router.post(
@@ -43,13 +41,14 @@ async def verify_message(request: VerificationRequest):
     return await auth.verify_message(request)
 
 
-@router.post("/token", response_model=Token)
+@router.post("/token", response_model=TokenResponse)
 async def get_access_token(
-    moralis_id: str, wallet_address: str, signature: str, chain_id: int
+    id: str, moralis_id: str, wallet_address: str, signature: str, chain_id: int
 ):
     logger.info("Generate token endpoint accessed.")
 
     token_data = TokenData(
+        id=id,
         moralis_id=moralis_id,
         wallet_address=wallet_address,
         signature=signature,
@@ -57,8 +56,3 @@ async def get_access_token(
     )
 
     return await auth.get_access_token(token_data)
-
-
-@router.get("/protected_route")
-async def protected_route(user: user_dependacy):
-    return user
