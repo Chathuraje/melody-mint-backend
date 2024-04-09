@@ -16,6 +16,8 @@ class SocialMedia(BaseModel):
 
 
 class UserProfile(BaseModel):
+    first_name: Optional[str] = Field(None, description="First name")
+    last_name: Optional[str] = Field(None, description="Last name")
     username: Optional[str] = Field(None, description="user's username")
     profile_hero: Optional[str] = Field(None, description="Profile hero image URL")
     profile_image: Optional[str] = Field(None, description="Profile image URL")
@@ -40,8 +42,4 @@ class UserProfile(BaseModel):
 
 
 class UserResponse(UserProfile):
-    id: PyObjectId = Field(..., description="user's ID")
-
-
-class UserCreateResponse(BaseModel):
     id: PyObjectId = Field(..., description="user's ID")

@@ -1,7 +1,6 @@
-from app.model.User import UserResponse, UserProfile, UserCreateResponse
+from app.model.User import UserResponse, UserProfile
 from app.utils.database import get_collection
 from pymongo.errors import PyMongoError
-from bson import ObjectId
 
 
 async def get_user_by_wallet_address(
@@ -21,13 +20,13 @@ async def get_user_by_wallet_address(
         return None
 
 
-async def create_user(user: UserProfile) -> UserCreateResponse | None:
+async def create_user(user: UserProfile) -> UserResponse | None:
     try:
         userCollection = await get_collection("users")
         data = await userCollection.insert_one(user.model_dump())
 
         if data.inserted_id:
-            return UserCreateResponse(id=data.inserted_id)
+            return UserResponse(id=data.inserted_id, **user.model_dump())
         else:
             return None
     except PyMongoError:

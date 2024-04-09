@@ -10,18 +10,19 @@ from app.utils.config import JWT_ALGORITHM, JWT_EXPIRY_MINUTES, JWT_SECRET
 oauth2_bearer = security.OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
 
-def authenticate_user(token_data: TokenData):
-    user = get_user_by_wallet_address(token_data.wallet_address, token_data.chain_id)
-    if user is None:
-        raise HTTPException(status_code=401, detail="Invalid token")
+# TODO: Try to add better authentication mechanism
+async def authenticate_user(token_data: TokenData):
+    user = await get_user_by_wallet_address(
+        token_data.wallet_address, token_data.chain_id
+    )
 
     return user
 
 
-def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     credentials_exception = HTTPException(
         status_code=401,
-        detail="Could not validate credentials",
+        detail="Could not validate token.",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
@@ -47,10 +48,10 @@ def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         )
 
     except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise HTTPException(status_code=401, detail="Could not validate token.")
 
-    user = get_user_by_wallet_address(token_data.wallet_address, token_data.chain_id)
-    if user is None:
+    user = authenticate_user(token_data)
+    if not user:
         raise credentials_exception
 
     return user

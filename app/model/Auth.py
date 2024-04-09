@@ -16,9 +16,6 @@ class ChallengeResponse(BaseModel):
     message: Optional[str] = Field(
         ..., description="Message containing the details of the verification request"
     )
-    profileId: Optional[str] = Field(
-        ..., description="Profile ID associated with the verification request"
-    )
 
 
 class VerificationRequest(BaseModel):
@@ -30,6 +27,13 @@ class VerificationResponse(BaseModel):
     id: Optional[str] = Field(
         None, description="Unique identifier for the user profile"
     )
+    wallet_address: Optional[str] = Field(
+        None, description="Wallet address of the user"
+    )
+    chain_id: Optional[int] = Field(None, description="Chain ID of the user")
+    token: Optional[str] = Field(None, description="JWT access token")
+    first_name: Optional[str] = Field(None, description="First name of the user")
+    last_name: Optional[str] = Field(None, description="Last name of the user")
 
 
 class Token(BaseModel):

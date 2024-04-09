@@ -3,6 +3,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+APP_DOMAIN: str = os.getenv("APP_DOMAIN")  # type: ignore
+APP_URI: str = os.getenv("APP_URI")  # type: ignore
+
 DB_URL: str = os.getenv("DB_URL")  # type: ignore
 DB_USERNAME: str = os.getenv("DB_USERNAME")  # type: ignore
 DB_PASSWORD: str = os.getenv("DB_PASSWORD")  # type: ignore

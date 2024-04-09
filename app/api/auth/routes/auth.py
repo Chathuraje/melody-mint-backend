@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, security
 from app.api.auth.utils.authentication import get_current_user
-from app.model.User import UserProfile, UserCreateResponse
+from app.model.User import UserProfile
 from app.utils import logging
 from app.api.auth.libraries import auth
 from app.model.Auth import (
@@ -44,7 +44,7 @@ async def verify_message(request: VerificationRequest):
 
 
 @router.post("/token", response_model=Token)
-async def login_for_access_token(
+async def get_access_token(
     moralis_id: str, wallet_address: str, signature: str, chain_id: int
 ):
     logger.info("Generate token endpoint accessed.")
@@ -56,7 +56,7 @@ async def login_for_access_token(
         chain_id=chain_id,
     )
 
-    return await auth.login_for_access_token(token_data)
+    return await auth.get_access_token(token_data)
 
 
 @router.get("/protected_route")

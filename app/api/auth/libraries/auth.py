@@ -3,13 +3,20 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, security
 from app.api.auth.utils.authentication import authenticate_user, create_access_token
 from app.api.user.utils import UserDbController
-from app.model.Auth import ChallengeResponse, Token, TokenData, VerificationResponse
-from app.model.User import UserCreateResponse, UserProfile, UserResponse
+from app.model.Auth import (
+    ChallengeReqeust,
+    ChallengeResponse,
+    Token,
+    TokenData,
+    VerificationRequest,
+    VerificationResponse,
+)
+from app.model.User import UserProfile, UserResponse
 from app.utils.config import (
     JWT_EXPIRY_MINUTES,
     MORALIS_API_KEY,
-    JWT_ALGORITHM,
-    JWT_SECRET,
+    APP_DOMAIN,
+    APP_URI,
 )
 from datetime import datetime, timedelta, timezone
 import requests
@@ -20,7 +27,8 @@ from app.utils.database import get_collection
 logger = logging.getLogger()
 
 
-async def request_challenge(request) -> ChallengeResponse:
+# Route: Request a Challenge Nonce for Web3 Authentication with Morals API
+async def request_challenge(request: ChallengeReqeust) -> ChallengeResponse:
     present = datetime.now(timezone.utc)
     present_plus_one_m = present + timedelta(minutes=1)
     expirationTime = str(present_plus_one_m.isoformat())
@@ -28,11 +36,11 @@ async def request_challenge(request) -> ChallengeResponse:
 
     REQUEST_URL = f"https://authapi.moralis.io/challenge/request/evm"
     request_object = {
-        "domain": "melodymint.tech",
+        "domain": APP_DOMAIN,
         "chainId": request.chainId,
         "address": request.address,
         "statement": "Please confirm your login with Melody Mint.",
-        "uri": "https://defi.finance/",
+        "uri": APP_URI,
         "expirationTime": expirationTime,
         "notBefore": "2020-01-01T00:00:00.000Z",
         "timeout": 15,
@@ -46,18 +54,20 @@ async def request_challenge(request) -> ChallengeResponse:
 
 
 # Route: Verify Message for Web3 Authentication with Morals API
-async def verify_message(request) -> VerificationResponse:
-    request = request.dict()
+async def verify_message(request: VerificationRequest) -> VerificationResponse:
 
     REQUEST_URL = f"https://authapi.moralis.io/challenge/verify/evm"
     response = requests.post(
-        REQUEST_URL, json=request, headers={"X-API-KEY": MORALIS_API_KEY}
+        REQUEST_URL,
+        json={"message": request.message, "signature": request.signature},
+        headers={"X-API-KEY": MORALIS_API_KEY},
     )
+
     if response.status_code == 201:  # user can authenticate
         address = json.loads(response.text).get("address")
         profile_id = json.loads(response.text).get("profileId")
         chain_id = json.loads(response.text).get("chainId")
-        signature = json.loads(response.text).get("signature")
+        signature = request.signature
 
         user = await UserDbController.get_user_by_wallet_address(address, chain_id)
         if not user:
@@ -84,29 +94,52 @@ async def verify_message(request) -> VerificationResponse:
                     detail=f"Error while creating user: {e}\nTraceback: {tb}",
                 ) from e
 
-        # jwt_user = {
-        #     "moralis_id": profile_id,
-        #     "wallet_address": address,
-        #     "signature": signature,
-        # }
+        jwt_user = {
+            "moralis_id": profile_id,
+            "wallet_address": address,
+            "signature": signature,
+        }
 
-        # token = create_access_token(jwt_user)
+        access_token_expires = timedelta(minutes=JWT_EXPIRY_MINUTES)
+        token = create_access_token(jwt_user, expires_delta=access_token_expires)
+
         logger.info(f"User {address} authenticated. Profile ID: {profile_id}")
 
-        return VerificationResponse(id=user.id)  # type: ignore
+        response_data = {
+            "id": user.id,
+            "wallet_address": address,
+            "chain_id": chain_id,
+            "token": token,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+        }
+
+        return VerificationResponse(**response_data)
+
+    elif response.status_code == 400:
+        logger.error(f"Challenge not found, Timeout may have exceeded.")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Challenge not found, Timeout may have exceeded",
+        )
 
     else:
-        logger.error("User not authenticated")
-        raise HTTPException(status_code=401, detail="User not authenticated")
+        logger.error(
+            f"Verification failed. Could not authenticate user. {response.text}"
+        )
+        raise HTTPException(
+            status_code=401,
+            detail=f"Verification failed. Could not authenticate user. {response.text}",
+        )
 
 
 # Route: Generate JWT Token
-async def login_for_access_token(token_data: TokenData):
-    user = authenticate_user(token_data)
+async def get_access_token(token_data: TokenData):
+    user = await authenticate_user(token_data)
     if not user:
         raise HTTPException(
             status_code=401,
-            detail="Incorrect username or password",
+            detail="Could not validate token.",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
