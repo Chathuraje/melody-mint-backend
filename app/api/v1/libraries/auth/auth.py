@@ -13,6 +13,7 @@ from app.api.v1.schemas.auth import (
     VerificationRequest,
 )
 from app.api.v1.libraries.auth.jwt import authenticate_user, create_access_token
+from app.api.v1.schemas.user import UserCreateRequest
 from app.api.v1.utils.common import (
     is_user_exist,
     is_valid_support_chain,
@@ -71,7 +72,7 @@ async def request_challenge(request: ChallengeReqeust) -> ChallengeResponse:
             },
         )
 
-        if response.status_code == 200:
+        if response.status_code == 201:
             logger.info(f"Challenge requested for {request.wallet_address}")
             return ChallengeResponse(**json.loads(response.text))
         else:
@@ -111,13 +112,11 @@ async def verify_message(request: VerificationRequest) -> VerificationResponse:
         user = await is_user_exist(address, chain_id)
         if not user:
             try:
-                user_profile = {
-                    "wallet_address": address,
-                    "chain_id": chain_id,
-                    "moralis_id": profile_id,
-                }
+                user_profile = UserCreateRequest(
+                    wallet_address=address, chain_id=chain_id, moralis_id=profile_id
+                )
 
-                user = await db_create_user(**user_profile)
+                user = await db_create_user(user_profile)
                 if user:
                     logger.info(f"User created. Profile ID: {profile_id}")
                 else:

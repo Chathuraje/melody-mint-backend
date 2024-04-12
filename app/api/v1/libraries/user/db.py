@@ -46,19 +46,22 @@ async def db_get_user_by_wallet_address(
 
 
 async def db_create_user(user_data: UserCreateRequest) -> UserResponse:
-    try:
-        user_collection = await get_collection("users")
-        data = await user_collection.insert_one(User(**user_data.model_dump()))
+    # try:
+    user_collection = await get_collection("users")
 
-        if data.inserted_id is not None:
-            return UserResponse(id=data.inserted_id, **user_data.model_dump())
-        else:
-            raise Exception("Failed to create user")
+    user = User(**user_data.model_dump())
+    data = await user_collection.insert_one(user.model_dump())
 
-    except PyMongoError as e:
-        raise Exception(f"MongoDB error: {e}")
-    except Exception as e:
-        raise Exception(f"An unexpected error occurred: {e}")
+    if data.inserted_id is not None:
+        return UserResponse(id=data.inserted_id, **user_data.model_dump())
+    else:
+        raise Exception("Failed to create user")
+
+
+# except PyMongoError as e:
+#     raise Exception(f"MongoDB error: {e}")
+# except Exception as e:
+#     raise Exception(f"An unexpected error occurred: {e}")
 
 
 async def db_update_user(id: str, user: UserUpdateRequest) -> UserResponse:

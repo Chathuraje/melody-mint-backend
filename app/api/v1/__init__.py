@@ -6,5 +6,5 @@ from app.api.v1.routes.user import user_router
 v1_routes = APIRouter(prefix="/v1")
 
 v1_routes.include_router(root_router)
-# v1_routes.include_router(auth_router)
+v1_routes.include_router(auth_router)
 v1_routes.include_router(user_router)

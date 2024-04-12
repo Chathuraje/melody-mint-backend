@@ -7,7 +7,7 @@ from app.utils import logging
 
 from app.api.v1.libraries.user import user
 
-user_router = APIRouter(prefix="/user", responses={404: {"description": "Not found"}})
+user_router = APIRouter(prefix="/users", responses={404: {"description": "Not found"}})
 logger = logging.getLogger()
 
 user_dependency = Annotated[dict, Depends(get_current_user)]
