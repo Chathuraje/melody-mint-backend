@@ -3,19 +3,33 @@ from colorlog import ColoredFormatter
 
 log_setup_done = False  # Flag to track whether logging setup is already done
 
-# class ExcludeHttpRequestFilter(logging.Filter):
-#     def filter(self, record):
-#         # Exclude log messages related to the HTTP request
-#         http_request_message = "HTTP Request: POST https://api.openai.com/v1/chat/completions"
 
-#         # Constant substring in the YouTube API-related log message
-#         youtube_api_constant_substring = 'HTTP/1.1'
-#         google_drive_string = 'oauth2client<4.0.0'
+class ExcludeHttpRequestFilter(logging.Filter):
+    def filter(self, record):
+        # Exclude log messages related to the HTTP request
+        # http_request_message = "HTTP Request: POST https://api.openai.com/v1/chat/completions"
 
-#         return http_request_message not in record.getMessage() and record.getMessage() != youtube_api_constant_substring and google_drive_string not in record.getMessage()
+        # # Constant substring in the YouTube API-related log message
+        # youtube_api_constant_substring = 'HTTP/1.1'
+        # google_drive_string = 'oauth2client<4.0.0'
+
+        # return http_request_message not in record.getMessage() and record.getMessage() != youtube_api_constant_substring and google_drive_string not in record.getMessage()
+
+        return record.getMessage()
 
 
-def setupLogger():
+# class CustomExceptionHandler(logging.Handler):
+#     def emit(self, record):
+#         if record.exc_info:
+#             exc_type, exc_value, exc_traceback = record.exc_info
+#             if exc_type is not None:
+#                 error_message = f"{exc_type.__name__}: {exc_value}"
+#                 record.msg = f"{record.msg}\n{error_message}"
+#             record.exc_info = None
+#         super().emit(record)
+
+
+def setupLogger() -> None:
     global log_setup_done
 
     if not log_setup_done:
@@ -43,8 +57,13 @@ def setupLogger():
         console_handler.setLevel(logging.INFO)
         console_handler.setFormatter(formatter)
 
-        # console_handler.addFilter(ExcludeHttpRequestFilter())
+        # exception_handler = CustomExceptionHandler()
+        # exception_handler.setLevel(logging.ERROR)
+        # exception_handler.setFormatter(formatter)
+
+        console_handler.addFilter(ExcludeHttpRequestFilter())
         logging.getLogger().addHandler(console_handler)
+        # logging.getLogger().addHandler(exception_handler)
 
         log_setup_done = True
 

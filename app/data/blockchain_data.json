@@ -1,0 +1,14 @@
+{
+  "1": {
+    "name": "Ethereum",
+    "type": "Mainnet",
+    "symbol": "ETH",
+    "rpc_url": "https://mainnet.infura.io/v3/"
+  },
+  "11155111": {
+    "name": "Sepolia Testnet",
+    "type": "Testnet",
+    "symbol": "sETH",
+    "rpc_url": "https://sepolia.infura.io/v3/"
+  }
+}

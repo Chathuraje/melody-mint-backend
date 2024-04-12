@@ -8,13 +8,12 @@ logger = logging.getLogger()
 
 
 # ROUTE: Root Path
-async def read_root():
-    logger.info("Root endpoint accessed.")
+async def read_root() -> str:
     return "Hello World"
 
 
 # ROUTE: FastAPI Logs
-async def read_log(limit):
+async def read_log(limit) -> list[str]:
     try:
         async with aiofiles.open("system.log", "r") as log_file:
             if limit is None or limit < 0:

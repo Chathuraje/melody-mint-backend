@@ -1,19 +1,18 @@
 from fastapi import APIRouter
 from app.utils import logging
-from app.api.root.libraries import root
+from app.api.v1.libraries.root import root
 
+root_router = APIRouter(tags=["Root"])
 logger = logging.getLogger()
-router = APIRouter()
 
 
-@router.get("/", description="This is the root endpoint.")
+@root_router.get("/", description="This is the root endpoint.")
 async def read_root():
     logger.info("Root endpoint accessed.")
-
     return await root.read_root()
 
 
-@router.get(
+@root_router.get(
     "/read-log", description="This is to read the log file.", response_model=list[str]
 )
 async def read_log(limit: int = None):  # type: ignore

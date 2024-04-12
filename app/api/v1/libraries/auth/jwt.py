@@ -2,28 +2,23 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated
 from fastapi import Depends, HTTPException, security
 from jose import JWTError, jwt
-from app.api.user.utils.UserDbController import get_user_by_wallet_address
-from app.model.Auth import TokenData
-from app.model.User import UserResponse
-from app.utils.config import JWT_ALGORITHM, MORALIS_API_KEY, JWT_SECRET
+from app.api.v1.libraries.user.user import get_user_by_wallet_address
+from app.api.v1.responses.user import UserResponse
+from app.api.v1.schemas.auth import TokenDataRequest
+from app.config import settings
 
 
 oauth2_bearer = security.OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
+env = settings.get_settings()
 
 
 # TODO: Try to add better authentication mechanism
-async def authenticate_user(token_data: TokenData):
-    user: UserResponse | None = await get_user_by_wallet_address(
+async def authenticate_user(token_data: TokenDataRequest) -> bool:
+    user = await get_user_by_wallet_address(
         token_data.wallet_address, token_data.chain_id
     )
 
-    if user is None:
-        return None
-
-    if user.moralis_id != token_data.moralis_id:
-        return None
-
-    return user
+    return user is None or user.moralis_id != token_data.moralis_id
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
@@ -33,7 +28,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(token, env.JWT_SECRET, algorithms=[env.JWT_ALGORITHM])
         id = payload.get("id")
         moralis_id = payload.get("moralis_id")
         wallet_address = payload.get("wallet_address")
@@ -49,7 +44,15 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         ):
             raise credentials_exception
 
-        token_data = TokenData(
+        # Check if token has expired
+        expiration_timestamp = payload.get("exp")
+        if (
+            expiration_timestamp is None
+            or datetime.fromtimestamp(expiration_timestamp) < datetime.now()
+        ):
+            raise credentials_exception
+
+        token_data = TokenDataRequest(
             id=id,
             moralis_id=moralis_id,
             signature=signature,
@@ -58,7 +61,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         )
 
     except JWTError:
-        raise HTTPException(status_code=401, detail="Could not validate token.")
+        raise credentials_exception
 
     user = authenticate_user(token_data)
     if not user:
@@ -71,6 +74,6 @@ def create_access_token(data: dict, expires_delta: timedelta) -> str:
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + expires_delta
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, env.JWT_SECRET, algorithm=env.JWT_ALGORITHM)
 
     return encoded_jwt

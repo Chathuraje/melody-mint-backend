@@ -1,12 +1,17 @@
 from app.utils import logging
-from app.utils.database import connect
+from app.config.database import connect
 
 
-async def startup_event():
+async def startup_event() -> None:
     logging.setupLogger()
-    logger = logging.getLogger()
 
-    # Connect to MongoDB
-    await connect()
+    try:
+        logger = logging.getLogger()
+        logger.info("Melody Mint FastAPI starting...")
 
-    logger.info(f"Melody Mint FastAPI running....")
+        # Connect to MongoDB
+        await connect()
+
+        logger.info(f"Melody Mint FastAPI running....")
+    except Exception as e:
+        logger.error(f"Error connecting to MongoDB: {e}")
