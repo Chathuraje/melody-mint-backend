@@ -1,3 +1,4 @@
+from time import sleep
 from typing import Annotated
 from fastapi import Depends, HTTPException, status
 
@@ -50,25 +51,27 @@ async def get_user(user_id: str) -> UserResponse:
 
 
 # Route: Get User Profile by Wallet Address
-async def get_user_by_wallet_address(address: str, chain_id: int) -> UserResponse:
+async def get_user_by_wallet_address(user_data: UserCreateRequest) -> UserResponse:
     try:
-        if not is_valid_support_chain(chain_id):
+        if not is_valid_support_chain(user_data.chain_id):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Unsupported chain ID provided.",
             )
 
-        if not await is_valid_wallet_address(address, chain_id):
+        if not await is_valid_wallet_address(
+            user_data.wallet_address, user_data.chain_id
+        ):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Invalid wallet address provided.",
             )
 
-        user = await db_get_user_by_wallet_address(address, chain_id)
+        user = await db_get_user_by_wallet_address(user_data)
         if user is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"User with wallet address: {address} not found.",
+                detail=f"User with wallet address: {user_data.wallet_address} not found.",
             )
         return user
     except Exception as e:
@@ -92,9 +95,7 @@ async def create_user(user_data: UserCreateRequest) -> UserResponse:
                 detail="Invalid wallet address provided.",
             )
 
-        exisitng_user = await is_user_exist(
-            user_data.wallet_address, user_data.chain_id
-        )
+        exisitng_user = await is_user_exist(user_data)
         if exisitng_user:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
@@ -182,7 +183,7 @@ async def get_profile(token: Annotated[str, Depends(oauth2_bearer)]) -> UserResp
             or datetime.fromtimestamp(expiration_timestamp) < datetime.now()
         ):
             raise credentials_exception
-        
+
         token_data = TokenDataRequest(
             id=id,
             moralis_id=moralis_id,

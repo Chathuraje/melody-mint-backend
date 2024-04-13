@@ -1,6 +1,6 @@
 import traceback
 from fastapi import HTTPException, status
-from app.api.v1.libraries.user.db import db_create_user
+from app.api.v1.libraries.user.db import db_create_user, db_store_message
 from app.api.v1.model.User import User
 from app.api.v1.responses.auth import (
     ChallengeResponse,
@@ -73,6 +73,7 @@ async def request_challenge(request: ChallengeReqeust) -> ChallengeResponse:
         )
 
         if response.status_code == 201:
+            print(response.text)
             logger.info(f"Challenge requested for {request.wallet_address}")
             return ChallengeResponse(**json.loads(response.text))
         else:
@@ -104,21 +105,30 @@ async def verify_message(request: VerificationRequest) -> VerificationResponse:
         raise HTTPException(status_code=400, detail="Error verifying message")
 
     if response.status_code == 201:  # user can authenticate
-        address = json.loads(response.text).get("address")
-        profile_id = json.loads(response.text).get("profileId")
+        # Store message and the wallet address in the database
+        wallet_address = json.loads(response.text).get("address")
+        moralis_id = json.loads(response.text).get("profileId")
         chain_id = json.loads(response.text).get("chainId")
         signature = request.signature
 
-        user = await is_user_exist(address, chain_id)
+        user_data = UserCreateRequest(
+            wallet_address=wallet_address,
+            chain_id=chain_id,
+            moralis_id=moralis_id,
+        )
+
+        user = await is_user_exist(user_data)
         if not user:
             try:
                 user_profile = UserCreateRequest(
-                    wallet_address=address, chain_id=chain_id, moralis_id=profile_id
+                    wallet_address=wallet_address,
+                    chain_id=chain_id,
+                    moralis_id=moralis_id,
                 )
 
                 user = await db_create_user(user_profile)
                 if user:
-                    logger.info(f"User created. Profile ID: {profile_id}")
+                    logger.info(f"User created. Profile ID: {moralis_id}")
                 else:
                     logger.error(f"Error creating user: {user}")
                     raise HTTPException(
@@ -131,8 +141,8 @@ async def verify_message(request: VerificationRequest) -> VerificationResponse:
 
         jwt_user = TokenDataRequest(
             id=user.id,
-            moralis_id=profile_id,
-            wallet_address=address,
+            moralis_id=moralis_id,
+            wallet_address=wallet_address,
             signature=signature,
             chain_id=chain_id,
         )
@@ -142,17 +152,19 @@ async def verify_message(request: VerificationRequest) -> VerificationResponse:
             jwt_user.model_dump(), expires_delta=access_token_expires
         )
 
-        logger.info(f"User {address} authenticated. Profile ID: {profile_id}")
+        logger.info(f"User {wallet_address} authenticated. Profile ID: {user.id}")
 
         response_data = {
             "id": user.id,
-            "wallet_address": address,
+            "wallet_address": wallet_address,
             "chain_id": chain_id,
             "token": token,
             "first_name": user.first_name,
             "last_name": user.last_name,
+            "moralis_id": moralis_id,
         }
 
+        await db_store_message(request.message, wallet_address)
         return VerificationResponse(**response_data)
 
     elif response.status_code == 400:

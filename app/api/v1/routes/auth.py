@@ -13,7 +13,11 @@ from app.utils import logging
 from app.api.v1.libraries.auth import auth
 
 
-auth_router = APIRouter(prefix="/auth")
+auth_router = APIRouter(
+    prefix="/auth",
+    tags=["Authentications"],
+    responses={404: {"description": "Not found"}},
+)
 logger = logging.getLogger()
 
 

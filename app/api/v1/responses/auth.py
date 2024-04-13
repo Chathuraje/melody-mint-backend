@@ -16,6 +16,7 @@ class VerificationResponse(BaseModel):
     token: Optional[str] = Field(None, description="JWT access token")
     first_name: Optional[str] = Field(None, description="First name of the user")
     last_name: Optional[str] = Field(None, description="Last name of the user")
+    moralis_id: Optional[str] = Field(None, description="Moralis ID of the user")
 
 
 class TokenResponse(BaseModel):

@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     APP_ORGINS_LIST: list[str] = [
         urls.strip() for urls in os.getenv("APP_ORGINS", "").split(",")
     ]
+    
+    APP_SECRET_KEY: str = os.getenv("APP_SECRET_KEY", "")
 
     # Blcochain settings
     SUPPORTED_BLOCKCHAINS_LIST: list[str] = [
