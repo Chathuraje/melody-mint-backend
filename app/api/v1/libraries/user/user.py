@@ -1,4 +1,5 @@
-from fastapi import HTTPException, status
+from typing import Annotated
+from fastapi import Depends, HTTPException, status
 
 from app.api.v1.libraries.user.db import (
     db_create_user,
@@ -7,6 +8,7 @@ from app.api.v1.libraries.user.db import (
     db_get_user_by_wallet_address,
     db_update_user,
 )
+from app.api.v1.schemas.auth import TokenDataRequest
 from app.api.v1.utils.common import (
     is_user_exist,
     is_user_exist_by_id,
@@ -16,6 +18,14 @@ from app.api.v1.utils.common import (
 )
 from app.api.v1.responses.user import UserResponse
 from app.api.v1.schemas.user import UserCreateRequest, UserUpdateRequest
+from app.config import settings
+from app.utils import auth
+from jose import JWTError, jwt
+from datetime import datetime
+from fastapi import security
+
+env = settings.get_settings()
+oauth2_bearer = security.OAuth2PasswordBearer(tokenUrl="/v1/auth/token")
 
 
 # Route: Get User Profile
@@ -136,3 +146,56 @@ async def delete_user(user_id):
         )
 
     return await db_delete_user(user_id)
+
+
+# Route: Get User Profile
+async def get_profile(token: Annotated[str, Depends(oauth2_bearer)]) -> UserResponse:
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Could not validate token.",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(
+            token, env.JWT_SECRET_ACCESS, algorithms=[env.JWT_ALGORITHM]
+        )
+
+        id = payload.get("id")
+        moralis_id = payload.get("moralis_id")
+        wallet_address = payload.get("wallet_address")
+        signature = payload.get("signature")
+        chain_id = payload.get("chain_id")
+
+        if (
+            moralis_id is None
+            or wallet_address is None
+            or signature is None
+            or chain_id is None
+            or id is None
+        ):
+            raise credentials_exception
+
+        # Check if token has expired
+        expiration_timestamp = payload.get("exp")
+        if (
+            expiration_timestamp is None
+            or datetime.fromtimestamp(expiration_timestamp) < datetime.now()
+        ):
+            raise credentials_exception
+        
+        token_data = TokenDataRequest(
+            id=id,
+            moralis_id=moralis_id,
+            signature=signature,
+            chain_id=chain_id,
+            wallet_address=wallet_address,
+        )
+
+    except JWTError:
+        raise credentials_exception
+
+    user = await auth.authenticate_user(token_data)
+    if not user:
+        raise credentials_exception
+
+    return user

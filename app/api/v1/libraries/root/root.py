@@ -12,6 +12,11 @@ async def read_root() -> str:
     return "Hello World"
 
 
+# Route: Health Check
+async def health_check() -> dict[str, str]:
+    return {"status": "ok"}
+
+
 # ROUTE: FastAPI Logs
 async def read_log(limit) -> list[str]:
     try:

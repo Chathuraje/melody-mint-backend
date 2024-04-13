@@ -12,7 +12,7 @@ from app.api.v1.schemas.auth import (
     TokenDataRequest,
     VerificationRequest,
 )
-from app.api.v1.libraries.auth.jwt import authenticate_user, create_access_token
+from app.utils.auth import authenticate_user, create_access_token
 from app.api.v1.schemas.user import UserCreateRequest
 from app.api.v1.utils.common import (
     is_user_exist,
