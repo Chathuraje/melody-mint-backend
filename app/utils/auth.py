@@ -11,7 +11,7 @@ from app.config import settings
 from app.utils.web3 import web3_verify_signature
 
 env = settings.get_settings()
-oauth2_bearer = security.OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
+oauth2_bearer = security.OAuth2PasswordBearer(tokenUrl="/api/v1/auth/access_token")
 
 
 # TODO: Try to add better authentication mechanism
@@ -43,6 +43,17 @@ def create_access_token(data: dict, expires_delta: timedelta) -> str:
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
         to_encode, env.JWT_SECRET_ACCESS, algorithm=env.JWT_ALGORITHM
+    )
+
+    return encoded_jwt
+
+
+def create_refresh_token(data: dict, expires_delta: timedelta) -> str:
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + expires_delta
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(
+        to_encode, env.JWT_SECRET_REFRESH, algorithm=env.JWT_ALGORITHM
     )
 
     return encoded_jwt

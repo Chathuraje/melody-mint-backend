@@ -13,7 +13,7 @@ class VerificationResponse(BaseModel):
     id: str = Field(None, description="Unique identifier for the user profile")
     wallet_address: str = Field(None, description="Wallet address of the user")
     chain_id: Optional[int] = Field(None, description="Chain ID of the user")
-    token: Optional[str] = Field(None, description="JWT access token")
+    access_token: Optional[str] = Field(None, description="JWT access token")
     first_name: Optional[str] = Field(None, description="First name of the user")
     last_name: Optional[str] = Field(None, description="Last name of the user")
     moralis_id: Optional[str] = Field(None, description="Moralis ID of the user")

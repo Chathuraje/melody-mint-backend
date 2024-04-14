@@ -37,9 +37,11 @@ class Settings(BaseSettings):
 
     # JWT settings
     JWT_SECRET_ACCESS: str = os.getenv("JWT_SECRET_ACCESS", "")
+    JWT_EXPIRY_MINUTES_ACCESS: int = int(os.getenv("JWT_EXPIRY_MINUTES_ACCESS", 5))
     JWT_SECRET_REFRESH: str = os.getenv("JWT_SECRET_REFRESH", "")
+    JWT_EXPIRY_MINUTES_REFRESH: int = int(os.getenv("JWT_EXPIRY_MINUTES_REFRESH", 3600))
+    JWT_REFRESH_COOKIE_NAME: str = os.getenv("JWT_REFRESH_COOKIE_NAME", "mmweb3_ref_token")
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "")
-    JWT_EXPIRY_MINUTES: int = int(os.getenv("JWT_EXPIRY_MINUTES", 15))
 
     # Moralis settings
     MORALIS_API_KEY: str = os.getenv("MORALIS_API_KEY", "")
