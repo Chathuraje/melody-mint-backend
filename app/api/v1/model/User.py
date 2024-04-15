@@ -9,11 +9,11 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class SocialMedia(BaseModel):
-    spotify: Optional[HttpUrl] = Field(description="Spotify profile link")
-    instagram: Optional[HttpUrl] = Field(description="Instagram profile link")
-    youtube: Optional[HttpUrl] = Field(description="Youtube channel link")
-    x: Optional[HttpUrl] = Field(description="Extra social media link")
-    discord: Optional[str] = Field(description="Discord username")
+    spotify: Optional[str] = Field(None, description="Spotify profile link")
+    instagram: Optional[str] = Field(None, description="Instagram profile link")
+    youtube: Optional[str] = Field(None, description="Youtube channel link")
+    x: Optional[str] = Field(None, description="Extra social media link")
+    discord: Optional[str] = Field(None, description="Discord username")
 
 
 class User(BaseModel):
@@ -33,7 +33,7 @@ class User(BaseModel):
     )
     email: Optional[EmailStr] = Field(None, description="Email address of the user")
     contact_no: Optional[str] = Field(None, description="Contact number of the user")
-    website: Optional[HttpUrl] = Field(None, description="Website URL of the user")
+    website: Optional[str] = Field(None, description="Website URL of the user")
     joined_date: str = Field(
         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         description="Date and time when the user joined",

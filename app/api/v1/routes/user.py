@@ -26,7 +26,7 @@ async def get_profile(access_user: user_dependency):
     return access_user
 
 
-# TODO: NEED TO FIX THIS
+# TODO: NEED TO FIX THIS To Validate UserData with Model
 @user_router.put(
     "/profile",
     description="Update User Profile",
@@ -75,16 +75,16 @@ async def update_user(
 #     return await user.create_user(user_data)
 
 
-# @user_router.get(
-#     "/{user_id}",
-#     description="Get User Profile",
-#     response_model=UserResponse,
-#     status_code=status.HTTP_200_OK,
-# )
-# async def get_user(user_id: str):
-#     logger.info("Get User Profile endpoint accessed")
+@user_router.get(
+    "/{user_id}",
+    description="Get User Profile",
+    response_model=UserResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def get_user(access_user: user_dependency, user_id: str):
+    logger.info("Get User Profile endpoint accessed")
 
-#     return await user.get_user(user_id)
+    return await user.get_user(user_id)
 
 
 # @user_router.delete(
