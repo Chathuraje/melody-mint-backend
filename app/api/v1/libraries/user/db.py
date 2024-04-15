@@ -82,14 +82,12 @@ async def db_update_user(id: str, user: UserUpdateRequest) -> UserResponse:
             {"_id": ObjectId(id)}, {"$set": updated_data}
         )
 
-        if data.modified_count > 0:
-            updated_user = await db_get_user_by_id(id)
-            if updated_user is None:
-                raise Exception("Failed to update user")
-
-            return UserResponse(**updated_user.model_dump())
-        else:
+        updated_user = await db_get_user_by_id(id)
+        if updated_user is None:
             raise Exception("Failed to update user")
+
+        return UserResponse(**updated_user.model_dump())
+
     except PyMongoError as e:
         raise Exception(f"MongoDB error: {e}")
     except Exception as e:

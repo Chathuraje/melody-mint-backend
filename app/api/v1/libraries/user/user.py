@@ -140,11 +140,11 @@ async def update_user(
     # user_data = UserUpdateRequest(**user_data.model_dump())
 
     if profile_hero is not None:
-        profile_hero_url = await upload_image(profile_hero)
+        profile_hero_url = await upload_image("hero", user_id, profile_hero)
         user_data.profile_hero = profile_hero_url
 
     if profile_image is not None:
-        profile_image_url = await upload_image(profile_image)
+        profile_image_url = await upload_image("profile", user_id, profile_image)
         user_data.profile_image = profile_image_url
 
     return await db_update_user(user_id, user_data)
