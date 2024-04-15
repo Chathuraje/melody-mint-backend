@@ -168,3 +168,4 @@ cython_debug/
 github.bat
 test/*
 app/temp/*
+app/api/v1/uploads/*

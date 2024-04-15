@@ -1,3 +1,4 @@
+import json
 from app.api.v1.model.User import User
 from app.utils import logging
 from bson import ObjectId
@@ -73,13 +74,20 @@ async def db_create_user(user_data: UserCreateRequest) -> UserResponse:
 
 async def db_update_user(id: str, user: UserUpdateRequest) -> UserResponse:
     try:
+        updated_data = json.loads(
+            user.model_dump_json(exclude_unset=True, exclude_none=True)
+        )
         userCollection = await get_collection("users")
         data = await userCollection.update_one(
-            {"_id": ObjectId(id)}, {"$set": user.model_dump()}
+            {"_id": ObjectId(id)}, {"$set": updated_data}
         )
 
         if data.modified_count > 0:
-            return UserResponse(id=id, **user.model_dump())
+            updated_user = await db_get_user_by_id(id)
+            if updated_user is None:
+                raise Exception("Failed to update user")
+
+            return UserResponse(**updated_user.model_dump())
         else:
             raise Exception("Failed to update user")
     except PyMongoError as e:
@@ -150,8 +158,6 @@ async def db_get_stored_message(wallet_address) -> str | None:
         raise Exception(f"MongoDB error: {e}")
     except Exception as e:
         raise Exception(f"An unexpected error occurred: {e}")
-
-
 
 
 async def db_delete_stored_message(wallet_address) -> bool:

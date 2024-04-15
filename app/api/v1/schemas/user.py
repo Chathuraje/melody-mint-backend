@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from pydantic import BaseModel, EmailStr, Field, HttpUrl
 from app.api.v1.model.User import SocialMedia, User
 
@@ -10,14 +11,20 @@ class UserCreateRequest(BaseModel):
 
 
 class UserUpdateRequest(BaseModel):
-    first_name: str = Field("", description="First name")
-    last_name: str = Field("", description="Last name")
-    username: str = Field("", description="user's username")
-    profile_hero: HttpUrl = Field("", description="Profile hero image URL")
-    profile_image: HttpUrl = Field("", description="Profile image URL")
-    artist_description: str = Field("", description="Description of the user")
-    social_media: SocialMedia = Field("", description="Social media links of the user")
-    email: EmailStr = Field("", description="Email address of the user")
-    contact_no: str = Field("", description="Contact number of the user")
-    website: HttpUrl = Field("", description="Website URL of the user")
-    disabled: bool = Field(False, description="Flag to disable the user account")
+    first_name: Optional[str] = Field(None, description="First name")
+    last_name: Optional[str] = Field(None, description="Last name")
+    username: Optional[str] = Field(None, description="user's username")
+    profile_hero: Optional[str] = Field(None, description="Profile hero image URL")
+    profile_image: Optional[str] = Field(None, description="Profile image URL")
+    artist_description: Optional[str] = Field(
+        None, description="Description of the user"
+    )
+    social_media: Optional[SocialMedia] = Field(
+        None, description="Social media links of the user"
+    )
+    email: Optional[EmailStr] = Field(None, description="Email address of the user")
+    contact_no: Optional[str] = Field(None, description="Contact number of the user")
+    website: Optional[HttpUrl] = Field(None, description="Website URL of the user")
+    disabled: Optional[bool] = Field(
+        None, description="Flag to disable the user account"
+    )

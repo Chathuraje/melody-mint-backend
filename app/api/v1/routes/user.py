@@ -1,10 +1,10 @@
+import json
 from time import sleep
 from typing import Annotated
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, File, UploadFile, Form
 from app.api.v1.responses.user import UserResponse
 from app.api.v1.schemas.user import UserCreateRequest, UserUpdateRequest
 from app.utils import logging
-
 from app.api.v1.libraries.user import user
 
 user_router = APIRouter(
@@ -12,7 +12,7 @@ user_router = APIRouter(
 )
 logger = logging.getLogger()
 
-user_dependency = Annotated[dict, Depends(user.get_profile)]
+user_dependency = Annotated[UserResponse, Depends(user.get_profile)]
 
 
 @user_router.get(
@@ -21,9 +21,34 @@ user_dependency = Annotated[dict, Depends(user.get_profile)]
     response_model=UserResponse,
     status_code=status.HTTP_200_OK,
 )
-async def get_profile(user: user_dependency):
+async def get_profile(access_user: user_dependency):
     logger.info("Get User Profile endpoint accessed")
-    return user
+    return access_user
+
+
+# TODO: NEED TO FIX THIS
+@user_router.put(
+    "/profile",
+    description="Update User Profile",
+    response_model=UserResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def update_user(
+    access_user: user_dependency,
+    # user_data: UserUpdateRequest,
+    user_data=Form(None),
+    profile_hero: UploadFile = File(None),
+    profile_image: UploadFile = File(None),
+):
+    logger.info("Update User Profile endpoint accessed")
+
+    user_data = json.loads(user_data)
+    user_data.pop("profile_hero", None)
+    user_data.pop("profile_image", None)
+
+    return await user.update_user(
+        access_user.id, user_data, profile_hero, profile_image
+    )
 
 
 # @user_router.post(
@@ -60,17 +85,6 @@ async def get_profile(user: user_dependency):
 #     logger.info("Get User Profile endpoint accessed")
 
 #     return await user.get_user(user_id)
-
-
-# @user_router.put(
-#     "/{user_id}",
-#     description="Update User Profile",
-#     response_model=UserResponse,
-#     status_code=status.HTTP_200_OK,
-# )
-# async def update_user(user_id: str, user_data: UserUpdateRequest):
-#     logger.info("Update User Profile endpoint accessed")
-#     return await user.update_user(user_id, user_data)
 
 
 # @user_router.delete(

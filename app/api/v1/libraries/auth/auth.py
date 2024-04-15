@@ -79,7 +79,6 @@ async def request_challenge(request: ChallengeReqeust) -> ChallengeResponse:
         )
 
         if response.status_code == 201:
-            print(response.text)
             logger.info(f"Challenge requested for {request.wallet_address}")
             return ChallengeResponse(**json.loads(response.text))
         else:

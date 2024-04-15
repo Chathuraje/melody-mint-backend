@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, UploadFile, status
 
 from app.api.v1.libraries.user.db import (
     db_create_user,
@@ -23,6 +23,8 @@ from app.utils import auth
 from jose import JWTError, jwt
 from datetime import datetime
 from fastapi import security
+
+from app.utils.resources_handle import upload_image
 
 env = settings.get_settings()
 oauth2_bearer = security.OAuth2PasswordBearer(tokenUrl="/v1/auth/token")
@@ -113,7 +115,14 @@ async def create_user(user_data: UserCreateRequest) -> UserResponse:
         raise e
 
 
-async def update_user(user_id: str, user_data: UserUpdateRequest) -> UserResponse:
+async def update_user(
+    user_id: str,
+    user_data,
+    profile_hero: UploadFile,
+    profile_image: UploadFile,
+) -> UserResponse:
+
+    user_data = UserUpdateRequest(**user_data)
 
     if not is_valid_object_id(user_id):
         raise HTTPException(
@@ -127,6 +136,16 @@ async def update_user(user_id: str, user_data: UserUpdateRequest) -> UserRespons
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"User with ID: {user_id} not found.",
         )
+
+    # user_data = UserUpdateRequest(**user_data.model_dump())
+
+    if profile_hero is not None:
+        profile_hero_url = await upload_image(profile_hero)
+        user_data.profile_hero = profile_hero_url
+
+    if profile_image is not None:
+        profile_image_url = await upload_image(profile_image)
+        user_data.profile_image = profile_image_url
 
     return await db_update_user(user_id, user_data)
 
