@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.server_api import ServerApi
-from app.config.settings import get_settings
+from config.settings import get_settings
 from app.utils import logging
 from motor.motor_asyncio import AsyncIOMotorCollection
 

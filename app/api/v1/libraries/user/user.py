@@ -18,7 +18,7 @@ from app.api.v1.utils.common import (
 )
 from app.api.v1.responses.user import UserResponse
 from app.api.v1.schemas.user import UserCreateRequest, UserUpdateRequest
-from app.config import settings
+from config import settings
 from app.utils import auth
 from jose import JWTError, jwt
 from datetime import datetime

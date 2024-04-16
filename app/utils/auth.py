@@ -7,7 +7,7 @@ from app.api.v1.responses.user import UserResponse
 from app.api.v1.schemas.auth import TokenDataRequest
 from app.api.v1.schemas.user import UserCreateRequest
 from app.api.v1.utils.common import is_user_exist
-from app.config import settings
+from config import settings
 from app.utils.web3 import web3_verify_signature
 
 env = settings.get_settings()

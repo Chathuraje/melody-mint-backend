@@ -1,4 +1,4 @@
-from app.config import settings
+from config import settings
 from cryptography.fernet import Fernet
 
 

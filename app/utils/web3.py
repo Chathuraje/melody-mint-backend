@@ -1,6 +1,6 @@
 from eth_account import Account
 from eth_account.messages import encode_defunct
-from app.config.web3 import connect_web3
+from config.web3 import connect_web3
 from app.utils import logging
 
 logger = logging.getLogger()

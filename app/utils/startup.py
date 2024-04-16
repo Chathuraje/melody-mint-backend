@@ -1,5 +1,5 @@
 from app.utils import logging
-from app.config.database import connect
+from config.database import connect
 
 
 async def startup_event() -> None:

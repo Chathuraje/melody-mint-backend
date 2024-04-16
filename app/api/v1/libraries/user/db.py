@@ -4,9 +4,9 @@ from app.utils import logging
 from bson import ObjectId
 from app.api.v1.responses.user import UserResponse
 from app.api.v1.schemas.user import UserCreateRequest, UserUpdateRequest
-from app.config.database import get_collection
+from config.database import get_collection
 from pymongo.errors import PyMongoError
-from app.config import settings
+from config import settings
 from app.utils.app_security import decrypt_message, encrypt_text
 
 logger = logging.getLogger()

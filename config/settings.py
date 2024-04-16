@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     APP_ORGINS_LIST: list[str] = [
         urls.strip() for urls in os.getenv("APP_ORGINS", "").split(",")
     ]
-    
+
     APP_SECRET_KEY: str = os.getenv("APP_SECRET_KEY", "")
 
     # Blcochain settings
@@ -40,14 +40,16 @@ class Settings(BaseSettings):
     JWT_EXPIRY_MINUTES_ACCESS: int = int(os.getenv("JWT_EXPIRY_MINUTES_ACCESS", 5))
     JWT_SECRET_REFRESH: str = os.getenv("JWT_SECRET_REFRESH", "")
     JWT_EXPIRY_MINUTES_REFRESH: int = int(os.getenv("JWT_EXPIRY_MINUTES_REFRESH", 3600))
-    JWT_REFRESH_COOKIE_NAME: str = os.getenv("JWT_REFRESH_COOKIE_NAME", "mmweb3_ref_token")
+    JWT_REFRESH_COOKIE_NAME: str = os.getenv(
+        "JWT_REFRESH_COOKIE_NAME", "mmweb3_ref_token"
+    )
     JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "")
 
     # Moralis settings
     MORALIS_API_KEY: str = os.getenv("MORALIS_API_KEY", "")
 
-    # Infurate settings
-    INFURA_SECRET_KEY: str = os.getenv("INFURA_SECRET_KEY", "")
+    # Alchemy settings
+    ALCHEMY_SECRET_KEY: str = os.getenv("ALCHEMY_SECRET_KEY", "")
 
 
 @lru_cache()  # Cache the settings to avoid reading the .env file multiple times
