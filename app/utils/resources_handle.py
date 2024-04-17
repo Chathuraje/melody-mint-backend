@@ -22,7 +22,7 @@ async def upload_image(identifier, user_id, file: UploadFile):
         file_extension = Path(file.filename).suffix.lower() if file.filename else ""
 
         # Generating a unique filename with the file extension
-        file_name = f"{user_id}_{identifier}{file_extension}"
+        file_name = f"{uuid.uuid4()}_{user_id}_{identifier}{file_extension}"
         file_path = Path(f"{UPLOAD_PATH}/{file_name}")
 
         with file_path.open("wb") as buffer:
