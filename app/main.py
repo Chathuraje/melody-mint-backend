@@ -2,7 +2,7 @@ from venv import logger
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.utils import startup
-from app.config.settings import get_settings
+from config.settings import get_settings
 from app.api import api_router
 
 env = get_settings()

@@ -24,7 +24,7 @@ class UserUpdateRequest(BaseModel):
     )
     email: Optional[EmailStr] = Field(None, description="Email address of the user")
     contact_no: Optional[str] = Field(None, description="Contact number of the user")
-    website: Optional[HttpUrl] = Field(None, description="Website URL of the user")
+    website: Optional[str] = Field(None, description="Website URL of the user")
     disabled: Optional[bool] = Field(
         None, description="Flag to disable the user account"
     )

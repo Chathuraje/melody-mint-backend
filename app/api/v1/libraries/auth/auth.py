@@ -24,7 +24,7 @@ from app.api.v1.utils.common import (
     is_valid_support_chain,
     is_valid_wallet_address,
 )
-from app.config import settings
+from config import settings
 from datetime import datetime, timedelta, timezone
 import requests
 import json
