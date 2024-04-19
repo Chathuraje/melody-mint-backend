@@ -38,6 +38,7 @@ class User(BaseModel):
         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         description="Date and time when the user joined",
     )
+    verified: Optional[bool] = Field(False, description="Flag to verify the user")
     disabled: Optional[bool] = Field(
         False, description="Flag to disable the user account"
     )

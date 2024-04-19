@@ -28,3 +28,6 @@ class UserUpdateRequest(BaseModel):
     disabled: Optional[bool] = Field(
         None, description="Flag to disable the user account"
     )
+    verified: Optional[bool] = Field(
+        None, description="Flag to verify the user account"
+    )

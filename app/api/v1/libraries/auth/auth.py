@@ -112,7 +112,6 @@ async def verify_message(
         raise HTTPException(status_code=400, detail="Error verifying message")
 
     if moralis_response.status_code == 201:  # user can authenticate
-        # Store message and the wallet address in the database
         wallet_address = json.loads(moralis_response.text).get("address")
         moralis_id = json.loads(moralis_response.text).get("profileId")
         chain_id = json.loads(moralis_response.text).get("chainId")
