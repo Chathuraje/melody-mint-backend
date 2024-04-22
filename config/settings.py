@@ -51,6 +51,13 @@ class Settings(BaseSettings):
     # Alchemy settings
     ALCHEMY_SECRET_KEY: str = os.getenv("ALCHEMY_SECRET_KEY", "")
 
+    # Pinata settings
+    PINATA_API_KEY: str = os.getenv("PINATA_API_KEY", "")
+    PINATA_SECRET_KEY: str = os.getenv("PINATA_SECRET_KEY", "")
+    PINATA_JWT_TOKEN: str = os.getenv("PINATA_JWT_TOKEN", "")
+    PINATA_URI: str = os.getenv("PINATA_URI", "")
+    PINATA_IPFS_URI: str = os.getenv("PINATA_IPFS_URI", "")
+
 
 @lru_cache()  # Cache the settings to avoid reading the .env file multiple times
 def get_settings() -> Settings:
