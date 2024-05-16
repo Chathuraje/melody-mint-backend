@@ -58,6 +58,9 @@ class Settings(BaseSettings):
     PINATA_URI: str = os.getenv("PINATA_URI", "")
     PINATA_IPFS_URI: str = os.getenv("PINATA_IPFS_URI", "")
 
+    # Melody Mint Contract Details
+    MELODY_MINT_CONTRACT_ADDRESS: str = os.getenv("MELODY_MINT_CONTRACT_ADDRESS", "")
+
 
 @lru_cache()  # Cache the settings to avoid reading the .env file multiple times
 def get_settings() -> Settings:

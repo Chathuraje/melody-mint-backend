@@ -3,6 +3,6 @@
     "name": "Sepolia Testnet",
     "type": "Testnet",
     "symbol": "sETH",
-    "rpc_url": "https://eth-sepolia.g.alchemy.com/v2/"
+    "rpc_url": "https://eth-sepolia.g.alchemy.com/v2"
   }
 }

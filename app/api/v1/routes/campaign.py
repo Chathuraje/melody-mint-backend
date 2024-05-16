@@ -1,9 +1,13 @@
+from itertools import chain
 import json
 from time import sleep
 from typing import Annotated
 from fastapi import APIRouter, Depends, status, File, UploadFile, Form
 from app.api.v1.model.Campaign import CampaignOffChain, CollectionOffChain
-from app.api.v1.responses.campaign import CampaignCreateResponse
+from app.api.v1.responses.campaign import (
+    CampaignCreateResponse,
+    CampaignsResponse,
+)
 from app.api.v1.responses.user import UserResponse
 from app.utils import logging
 from app.api.v1.libraries.user import user
@@ -16,6 +20,17 @@ logger = logging.getLogger()
 
 
 user_dependency = Annotated[UserResponse, Depends(user.get_profile)]
+
+
+@campaing_router.get(
+    "/{chain_id}",
+    description="Get Campaign",
+    response_model=list[CampaignsResponse],
+    status_code=status.HTTP_200_OK,
+)
+async def get_campaigns(chain_id: int):
+    logger.info("Get Campaign endpoint accessed.")
+    return await campaign.get_campaigns(chain_id)
 
 
 @campaing_router.post(

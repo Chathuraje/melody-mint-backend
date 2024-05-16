@@ -1,9 +1,13 @@
 import json
 from fastapi import UploadFile
-from app.api.v1.libraries.campaign.ipfs import pinFiletoIPFS, pinFiletoJSON
+from app.utils.ipfs import pinFiletoIPFS, pinFiletoJSON, readFromIPFS
 from app.api.v1.model.Campaign import CampaignOffChain, CollectionOffChain
-from app.api.v1.responses.campaign import CampaignCreateResponse
+from app.api.v1.responses.campaign import (
+    CampaignCreateResponse,
+    CampaignsResponse,
+)
 from config import settings
+from config.web3 import web3_get_contract
 
 env = settings.get_settings()
 
@@ -47,3 +51,38 @@ async def create_campaign(
     return CampaignCreateResponse(
         campaign_data=ipfs_json_data_campaign, collection_data=ipfs_json_data_campaign
     )
+
+
+async def get_campaigns(chain_id: int) -> list[CampaignsResponse]:
+    contract = await web3_get_contract(chain_id)
+    result = contract.functions.getAllCampaigns().call()
+
+    campaigns = []
+    for campaign_data in result:
+        campaign_meta_data = campaign_data[8]
+        data = await readFromIPFS(campaign_meta_data)
+        if data is None:
+            raise Exception("Failed to read from IPFS")
+
+        collection_description = data["collection_description"]
+        collection_image = data["collection_image"]
+        collection_hero = data["collection_hero"]
+
+        campaign = CampaignsResponse(
+            fundraiser_name=campaign_data[0],
+            goal=campaign_data[1],
+            distribution_percentage=campaign_data[2],
+            start_date=campaign_data[3],
+            end_date=campaign_data[4],
+            current_amount=campaign_data[5],
+            disabled=campaign_data[6],
+            created_date=campaign_data[7],
+            collection_description=collection_description,
+            collection_image=collection_image,
+            collection_hero=collection_hero,
+            owner=campaign_data[9],
+            collection_address=campaign_data[10],
+        )
+        campaigns.append(campaign)
+
+    return campaigns

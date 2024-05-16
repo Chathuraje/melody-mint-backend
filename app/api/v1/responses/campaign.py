@@ -1,12 +1,22 @@
 from pydantic import BaseModel, Field
 
-from app.api.v1.model.Campaign import Campaign
-
 
 class CampaignCreateResponse(BaseModel):
     campaign_data: str = Field(..., description="Campaign data")
     collection_data: str = Field(..., description="Collection data")
 
 
-class CampaignsResponse(Campaign):
-    pass
+class CampaignsResponse(BaseModel):
+    fundraiser_name: str = Field(..., description="Fundraiser Name")
+    goal: int = Field(..., description="Goal")
+    distribution_percentage: int = Field(..., description="Distribution Percentage")
+    start_date: int = Field(..., description="Start Date")
+    end_date: int = Field(..., description="End Date")
+    current_amount: int = Field(..., description="Current Amount")
+    disabled: bool = Field(..., description="Disabled")
+    created_date: int = Field(..., description="Created Date")
+    collection_description: str = Field(..., description="Collection Description")
+    collection_image: str = Field(..., description="Collection Image")
+    collection_hero: str = Field(..., description="Collection Hero")
+    owner: str = Field(..., description="Owner")
+    collection_address: str = Field(..., description="Collection Address")

@@ -14,8 +14,6 @@ class UserUpdateRequest(BaseModel):
     first_name: Optional[str] = Field(None, description="First name")
     last_name: Optional[str] = Field(None, description="Last name")
     username: Optional[str] = Field(None, description="user's username")
-    profile_hero: Optional[str] = Field(None, description="Profile hero image URL")
-    profile_image: Optional[str] = Field(None, description="Profile image URL")
     artist_description: Optional[str] = Field(
         None, description="Description of the user"
     )
@@ -31,3 +29,5 @@ class UserUpdateRequest(BaseModel):
     verified: Optional[bool] = Field(
         None, description="Flag to verify the user account"
     )
+    profile_hero: Optional[bytes] = Field(None, description="Profile hero image URL")
+    profile_image: Optional[bytes] = Field(None, description="Profile image URL")

@@ -49,3 +49,12 @@ async def pinFiletoJSON(data: dict) -> str:
         raise Exception("Failed to pin json to IPFS")
 
     return response.json()["IpfsHash"]
+
+
+async def readFromIPFS(ipfs_hash: str) -> dict:
+    url = f"{env.PINATA_IPFS_URI}/{ipfs_hash}"
+    response = requests.get(url)
+    if response.status_code != 200:
+        raise Exception("Failed to read from IPFS")
+
+    return response.json()
