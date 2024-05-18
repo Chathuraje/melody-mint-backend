@@ -41,3 +41,18 @@ async def web3_get_contract(chain_id: int):
     except Exception as e:
         logger.error("An error occurred: %s", e)
         raise e
+
+
+async def web3_get_collection_contract(chain_id: int, collection_address: str):
+    with open("config/collection_abi.json", "r") as f:
+        abi = json.load(f)
+
+    try:
+        web3 = await connect_web3(chain_id)
+        contract_address = web3.to_checksum_address(collection_address)
+        contract = web3.eth.contract(address=contract_address, abi=abi)
+        return contract
+
+    except Exception as e:
+        logger.error("An error occurred: %s", e)
+        raise e

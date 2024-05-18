@@ -27,30 +27,6 @@ async def get_profile(access_user: user_dependency):
     return access_user
 
 
-@user_router.put(
-    "/profile",
-    description="Update User Profile",
-    # response_model=UserResponse,
-    status_code=status.HTTP_200_OK,
-)
-async def update_user(
-    # access_user: user_dependency,
-    user_data: UserUpdateRequest,
-):
-    logger.info("Update User Profile endpoint accessed")
-    image_bytes = user_data.profile_hero
-
-    if image_bytes is not None:
-        image_path = os.path.join("tmp", "profile_hero.jpg")
-        with open(image_path, "wb") as image_file:
-            image_file.write(image_bytes)
-
-    # Process the image bytes and metadata here
-
-    # return {"metadata": metadata}
-
-
-# TODO: NEED TO FIX THIS To Validate UserData with Model
 # @user_router.put(
 #     "/profile",
 #     description="Update User Profile",
@@ -59,21 +35,45 @@ async def update_user(
 # )
 # async def update_user(
 #     # access_user: user_dependency,
-#     # user_data: UserUpdateRequest,
-#     user_data=Form(UserUpdateRequest),
-#     profile_hero: UploadFile = File(None),
-#     profile_image: UploadFile = File(None),
+#     user_data: UserUpdateRequest,
 # ):
 #     logger.info("Update User Profile endpoint accessed")
-#     print(user_data)
+#     image_bytes = user_data.profile_hero
 
-# user_data = json.loads(user_data)
-# user_data.pop("profile_hero", None)
-# user_data.pop("profile_image", None)
+#     if image_bytes is not None:
+#         image_path = os.path.join("tmp", "profile_hero.jpg")
+#         with open(image_path, "wb") as image_file:
+#             image_file.write(image_bytes)
 
-# return await user.update_user(
-#     access_user.id, user_data, profile_hero, profile_image
-# )
+# Process the image bytes and metadata here
+
+# return {"metadata": metadata}
+
+
+# TODO: NEED TO FIX THIS To Validate UserData with Model
+@user_router.put(
+    "/profile",
+    description="Update User Profile",
+    # response_model=UserResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def update_user(
+    access_user: user_dependency,
+    # user_data: UserUpdateRequest,
+    user_data=Form(UserUpdateRequest),
+    profile_hero: UploadFile = File(None),
+    profile_image: UploadFile = File(None),
+):
+    logger.info("Update User Profile endpoint accessed")
+    print(user_data)
+
+    user_data = json.loads(user_data)
+    user_data.pop("profile_hero", None)
+    user_data.pop("profile_image", None)
+
+    return await user.update_user(
+        access_user.id, user_data, profile_hero, profile_image
+    )
 
 
 # @user_router.post(

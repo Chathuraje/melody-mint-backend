@@ -6,6 +6,12 @@ class CampaignCreateResponse(BaseModel):
     collection_data: str = Field(..., description="Collection data")
 
 
+class InvestmentList(BaseModel):
+    id: str = Field(..., description="ID")
+    address: str = Field(..., description="Address of")
+    amount: float = Field(..., description="Amount")
+
+
 class CampaignsResponse(BaseModel):
     fundraiser_name: str = Field(..., description="Fundraiser Name")
     goal: int = Field(..., description="Goal")
@@ -20,3 +26,4 @@ class CampaignsResponse(BaseModel):
     collection_hero: str = Field(..., description="Collection Hero")
     owner: str = Field(..., description="Owner")
     collection_address: str = Field(..., description="Collection Address")
+    investment: list[InvestmentList] = Field(..., description="Investment")

@@ -29,5 +29,5 @@ class UserUpdateRequest(BaseModel):
     verified: Optional[bool] = Field(
         None, description="Flag to verify the user account"
     )
-    profile_hero: Optional[bytes] = Field(None, description="Profile hero image URL")
-    profile_image: Optional[bytes] = Field(None, description="Profile image URL")
+    profile_hero: Optional[str] = Field(None, description="Profile hero image URL")
+    profile_image: Optional[str] = Field(None, description="Profile image URL")

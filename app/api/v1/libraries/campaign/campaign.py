@@ -1,10 +1,12 @@
 import json
+from typing import List
 from fastapi import UploadFile
 from app.utils.ipfs import pinFiletoIPFS, pinFiletoJSON, readFromIPFS
 from app.api.v1.model.Campaign import CampaignOffChain, CollectionOffChain
 from app.api.v1.responses.campaign import (
     CampaignCreateResponse,
     CampaignsResponse,
+    InvestmentList,
 )
 from config import settings
 from config.web3 import web3_get_contract
@@ -82,7 +84,67 @@ async def get_campaigns(chain_id: int) -> list[CampaignsResponse]:
             collection_hero=collection_hero,
             owner=campaign_data[9],
             collection_address=campaign_data[10],
+            investment=[],
         )
         campaigns.append(campaign)
 
     return campaigns
+
+
+async def combine_similar_investments(investments: List[tuple]) -> List[InvestmentList]:
+    combined_investments = {}
+    for investment in investments:
+        address = investment[0]
+        amount = investment[1]
+        if address in combined_investments:
+            combined_investments[address] += amount
+        else:
+            combined_investments[address] = amount
+
+    # Convert combined_investments dictionary to list of InvestmentList objects
+    # Generate unique IDs for each investment
+    id_counter = 1
+    result = []
+    for addr, amt in combined_investments.items():
+        result.append(InvestmentList(id=str(id_counter), address=addr, amount=amt))
+        id_counter += 1
+
+    return result
+
+
+async def get_campaign_by_id(chain_id: int, campaign_id: int) -> CampaignsResponse:
+    contract = await web3_get_contract(chain_id)
+    result = contract.functions.getCampaign(campaign_id).call()
+
+    campaign_meta_data = result[8]
+    data = await readFromIPFS(campaign_meta_data)
+    if data is None:
+        raise Exception("Failed to read from IPFS")
+
+    collection_description = data["collection_description"]
+    collection_image = data["collection_image"]
+    collection_hero = data["collection_hero"]
+
+    investmentResult = contract.functions.getCampaignInvestments(campaign_id).call()
+    combined = await combine_similar_investments(investmentResult)
+
+    campaign = CampaignsResponse(
+        fundraiser_name=result[0],
+        goal=result[1],
+        distribution_percentage=result[2],
+        start_date=result[3],
+        end_date=result[4],
+        current_amount=result[5],
+        disabled=result[6],
+        created_date=result[7],
+        collection_description=collection_description,
+        collection_image=collection_image,
+        collection_hero=collection_hero,
+        owner=result[9],
+        collection_address=result[10],
+        investment=combined,
+    )
+
+    print(campaign)
+
+    return campaign

@@ -33,6 +33,17 @@ async def get_campaigns(chain_id: int):
     return await campaign.get_campaigns(chain_id)
 
 
+@campaing_router.get(
+    "/{chain_id}/{campaign_id}",
+    description="Get Campaign by ID",
+    response_model=CampaignsResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def get_campaign_by_id(chain_id: int, campaign_id: int):
+    logger.info("Get Campaign by ID endpoint accessed.")
+    return await campaign.get_campaign_by_id(chain_id, campaign_id)
+
+
 @campaing_router.post(
     "/",
     description="Create Fundraiser Campaign",
