@@ -24,9 +24,18 @@ async def get_music_data(
     return await music_identifier.get_music_data(user_data.id)
 
 
+@music_identifier_router.get("/{music_id}", response_model=MusicResponse)
+async def get_music_single_data(
+    user_data: user_dependency,
+    music_id: str,
+):
+    logger.info("Getting music data")
+    return await music_identifier.get_music_single_data(music_id)
+
+
 @music_identifier_router.post("/train", response_model=MusicNew)
 async def train_music(
-    user_data: UserResponse, file: UploadFile = File(...), song_name: str = Form(...)
+    user_data: user_dependency, file: UploadFile = File(...), song_name: str = Form(...)
 ):
     try:
         logger.info("Training music")

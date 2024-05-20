@@ -157,9 +157,23 @@ async def get_music_data(music) -> list[MusicResponse] | None:
         for music_de in music_details:
             if music_de["user_id"] == music:
                 musics.append(MusicResponse(id=str(music_de["_id"]), **music_de))
-                
+
         if music_details:
             return musics
+        else:
+            return None
+
+    except Exception as e:
+        raise Exception(f"An unexpected error occurred: {e}")
+
+
+async def get_music_single_data(music_id) -> MusicResponse | None:
+    try:
+        music_collection = await get_collection("musics")
+        music_details = await music_collection.find_one({"_id": ObjectId(music_id)})
+
+        if music_details:
+            return MusicResponse(id=str(music_details["_id"]), **music_details)
         else:
             return None
 
