@@ -27,3 +27,4 @@ class CampaignsResponse(BaseModel):
     owner: str = Field(..., description="Owner")
     collection_address: str = Field(..., description="Collection Address")
     investment: list[InvestmentList] = Field(..., description="Investment")
+    owner_name: str = Field(..., description="Owner Name")

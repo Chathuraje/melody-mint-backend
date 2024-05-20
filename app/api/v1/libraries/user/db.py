@@ -181,3 +181,19 @@ async def db_delete_stored_message(wallet_address) -> bool:
         raise Exception(f"MongoDB error: {e}")
     except Exception as e:
         raise Exception(f"An unexpected error occurred: {e}")
+
+
+async def db_get_user_by_only_wallet_address(wallet_address: str):
+    try:
+        user_collection = await get_collection("users")
+        user = await user_collection.find_one({"wallet_address": wallet_address})
+
+        if user is not None:
+            return UserResponse(id=user["_id"], **user)
+        else:
+            return None
+
+    except PyMongoError as e:
+        raise Exception(f"MongoDB error: {e}")
+    except Exception as e:
+        raise Exception(f"An unexpected error occurred: {e}")

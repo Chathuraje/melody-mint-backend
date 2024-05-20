@@ -1,6 +1,7 @@
 import json
 from typing import List
 from fastapi import UploadFile
+from app.api.v1.libraries.user.db import db_get_user_by_only_wallet_address
 from app.utils.ipfs import pinFiletoIPFS, pinFiletoJSON, readFromIPFS
 from app.api.v1.model.Campaign import CampaignOffChain, CollectionOffChain
 from app.api.v1.responses.campaign import (
@@ -70,6 +71,13 @@ async def get_campaigns(chain_id: int) -> list[CampaignsResponse]:
         collection_image = data["collection_image"]
         collection_hero = data["collection_hero"]
 
+        owner = campaign_data[9]
+        owner_data = await db_get_user_by_only_wallet_address(owner)
+        if owner_data is None:
+            raise Exception("Failed to get owner data")
+
+        owner_name = f"{owner_data.first_name} {owner_data.last_name}"
+
         campaign = CampaignsResponse(
             fundraiser_name=campaign_data[0],
             goal=campaign_data[1],
@@ -85,6 +93,7 @@ async def get_campaigns(chain_id: int) -> list[CampaignsResponse]:
             owner=campaign_data[9],
             collection_address=campaign_data[10],
             investment=[],
+            owner_name=owner_name,
         )
         campaigns.append(campaign)
 
@@ -128,6 +137,13 @@ async def get_campaign_by_id(chain_id: int, campaign_id: int) -> CampaignsRespon
     investmentResult = contract.functions.getCampaignInvestments(campaign_id).call()
     combined = await combine_similar_investments(investmentResult)
 
+    owner = result[9]
+    owner_data = await db_get_user_by_only_wallet_address(owner)
+    if owner_data is None:
+        raise Exception("Failed to get owner data")
+
+    owner_name = f"{owner_data.first_name} {owner_data.last_name}"
+
     campaign = CampaignsResponse(
         fundraiser_name=result[0],
         goal=result[1],
@@ -143,6 +159,7 @@ async def get_campaign_by_id(chain_id: int, campaign_id: int) -> CampaignsRespon
         owner=result[9],
         collection_address=result[10],
         investment=combined,
+        owner_name=owner_name,
     )
 
     print(campaign)

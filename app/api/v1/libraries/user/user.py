@@ -5,6 +5,7 @@ from app.api.v1.libraries.user.db import (
     db_create_user,
     db_delete_user,
     db_get_user_by_id,
+    db_get_user_by_only_wallet_address,
     db_get_user_by_wallet_address,
     db_update_user,
 )
@@ -218,3 +219,16 @@ async def get_profile(token: Annotated[str, Depends(oauth2_bearer)]) -> UserResp
         raise credentials_exception
 
     return user
+
+
+async def get_user_by_only_wallet_address(wallet_address: str) -> UserResponse:
+    try:
+        user = await db_get_user_by_only_wallet_address(wallet_address)
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User with wallet address: {wallet_address} not found.",
+            )
+        return user
+    except Exception as e:
+        raise e

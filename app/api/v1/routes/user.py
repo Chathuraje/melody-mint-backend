@@ -76,16 +76,16 @@ async def update_user(
     )
 
 
-# @user_router.post(
-#     "/wallet",
-#     description="Get User Profile by Wallet Address",
-#     response_model=UserResponse,
-#     status_code=status.HTTP_200_OK,
-# )
-# async def get_user_by_wallet_address(user_data: UserCreateRequest):
-#     logger.info("Get User Profile by Wallet Address endpoint accessed")
+@user_router.post(
+    "/wallet/{wallet_address}",
+    description="Get User Profile by Wallet Address",
+    response_model=UserResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def get_user_by_wallet_address(wallet_address: str):
+    logger.info("Get User Profile by Wallet Address endpoint accessed")
 
-#     return await user.get_user_by_wallet_address(user_data)
+    return await user.get_user_by_only_wallet_address(wallet_address)
 
 
 # @user_router.post(

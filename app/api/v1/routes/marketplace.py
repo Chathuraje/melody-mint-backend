@@ -1,6 +1,10 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, status
-from app.api.v1.responses.marketplace import MarketplaceResponse, NFTResponse
+from app.api.v1.responses.marketplace import (
+    MarketplaceResponse,
+    NFTResponse,
+    SinglNFTResponseWithMarketplace,
+)
 from app.api.v1.responses.user import UserResponse
 from app.utils import logging
 from app.api.v1.libraries.user import user
@@ -40,9 +44,9 @@ async def get_nfts(chaind_id: int, collection_address: str):
 
 
 @marketplace_router.get(
-    "/nft/{nft_id}",
+    "/nft/{chaind_id}/{collection_address}/{nft_id}",
     description="Get NFT",
-    response_model=NFTResponse,
+    response_model=SinglNFTResponseWithMarketplace,
 )
 async def get_single_nft(chaind_id: int, collection_address: str, nft_id: str):
     logger.info("Get NFTs endpoint accessed.")
