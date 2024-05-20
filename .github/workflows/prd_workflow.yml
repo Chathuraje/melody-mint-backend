@@ -14,7 +14,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Create and activate virtual environment
         run: |
@@ -30,18 +30,29 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "DB_NAME=${{ secrets.DB_NAME }}" > .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "APP_NAME=${{ secrets.APP_NAME }}" > .env
+          echo "FRONTEND_APP_DOMAIN=${{ secrets.FRONTEND_APP_DOMAIN }}" >> .env
+          echo "FRONTEND_APP_URI=${{ secrets.FRONTEND_APP_URI }}" >> .env
+          echo "APP_ORGINS=${{ secrets.APP_ORGINS }}" >> .env
+          echo "APP_SECRET_KEY=${{ secrets.APP_SECRET_KEY }}" >> .env
+          echo "SUPPORTED_BLOCKCHAINS=${{ secrets.SUPPORTED_BLOCKCHAINS }}" >> .env
           echo "DB_URL=${{ secrets.DB_URL }}" >> .env
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-          echo "JWT_ALGORITHM=${{ secrets.JWT_ALGORITHM }}" >> .env
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
-          echo "AUDD_API_KEY=${{ secrets.AUDD_API_KEY }}" >> .env
-          echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
-          echo "MYSQL_PORT=${{ secrets.MYSQL_PORT }}" >> .env
-          echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
-          echo "MYSQL_DB=${{ secrets.MYSQL_DB }}" >> .env
-
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_APP_NAME=${{ secrets.DB_APP_NAME }}" >> .env
+          echo "JWT_SECRET_ACCESS=${{ secrets.JWT_SECRET_ACCESS }}" > .env
+          echo "JWT_EXPIRY_MINUTES_ACCESS=${{ secrets.JWT_EXPIRY_MINUTES_ACCESS }}" >> .env
+          echo "JWT_SECRET_REFRESH=${{ secrets.JWT_SECRET_REFRESH }}" >> .env
+          echo "JWT_EXPIRY_MINUTES_REFRESH=${{ secrets.JWT_EXPIRY_MINUTES_REFRESH }}" >> .env
+          echo "JWT_REFRESH_COOKIE_NAME=${{ secrets.JWT_REFRESH_COOKIE_NAME }}" >> .env
+          echo "ALCHEMY_SECRET_KEY=${{ secrets.ALCHEMY_SECRET_KEY }}" >> .env
+          echo "PINATA_API_KEY=${{ secrets.PINATA_API_KEY }}" >> .env
+          echo "PINATA_SECRET_KEY=${{ secrets.PINATA_SECRET_KEY }}" >> .env
+          echo "PINATA_JWT_TOKEN=${{ secrets.PINATA_JWT_TOKEN }}" >> .env
+          echo "PINATA_URI=${{ secrets.PINATA_URI }}" >> .env
+          echo "PINATA_IPFS_URI=${{ secrets.PINATA_IPFS_URI }}" >> .env
+          echo "MELODY_MINT_CONTRACT_ADDRESS=${{ secrets.MELODY_MINT_CONTRACT_ADDRESS }}" > .env
 
       - name: Run Update Services
         run: |
