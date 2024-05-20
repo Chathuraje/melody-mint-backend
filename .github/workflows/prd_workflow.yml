@@ -24,6 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install portaudio19-dev -y
+          sudo apt install ffmpeg -y
           source .venv/bin/activate
           python3 -m pip install --upgrade pip
           pip3 install -r requirements.txt
@@ -41,7 +42,7 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
           echo "DB_APP_NAME=${{ secrets.DB_APP_NAME }}" >> .env
-          echo "JWT_SECRET_ACCESS=${{ secrets.JWT_SECRET_ACCESS }}" > .env
+          echo "JWT_SECRET_ACCESS=${{ secrets.JWT_SECRET_ACCESS }}" >> .env
           echo "JWT_EXPIRY_MINUTES_ACCESS=${{ secrets.JWT_EXPIRY_MINUTES_ACCESS }}" >> .env
           echo "JWT_SECRET_REFRESH=${{ secrets.JWT_SECRET_REFRESH }}" >> .env
           echo "JWT_EXPIRY_MINUTES_REFRESH=${{ secrets.JWT_EXPIRY_MINUTES_REFRESH }}" >> .env
@@ -52,7 +53,7 @@ jobs:
           echo "PINATA_JWT_TOKEN=${{ secrets.PINATA_JWT_TOKEN }}" >> .env
           echo "PINATA_URI=${{ secrets.PINATA_URI }}" >> .env
           echo "PINATA_IPFS_URI=${{ secrets.PINATA_IPFS_URI }}" >> .env
-          echo "MELODY_MINT_CONTRACT_ADDRESS=${{ secrets.MELODY_MINT_CONTRACT_ADDRESS }}" > .env
+          echo "MELODY_MINT_CONTRACT_ADDRESS=${{ secrets.MELODY_MINT_CONTRACT_ADDRESS }}" >> .env
 
       - name: Run Update Services
         run: |
