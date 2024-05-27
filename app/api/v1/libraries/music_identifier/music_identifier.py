@@ -155,10 +155,11 @@ async def get_music_data(music) -> list[MusicResponse] | None:
         musics = []
 
         for music_de in music_details:
-            if music_de["user_id"] == music:
-                musics.append(MusicResponse(id=str(music_de["_id"]), **music_de))
+            # if music_de["user_id"] == music:
+            musics.append(MusicResponse(id=str(music_de["_id"]), **music_de))
 
         if music_details:
+            print(musics)
             return musics
         else:
             return None

@@ -169,3 +169,4 @@ github.bat
 test/*
 app/temp/*
 app/api/v1/uploads/*
+app/api/v1/upload/*
