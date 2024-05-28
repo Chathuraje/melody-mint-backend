@@ -5,9 +5,9 @@ After=network.target
 [Service]
 User=ubuntu
 Group=ubuntu
-WorkingDirectory=/home/ubuntu/MelodyMint/melody-mint-backend/melody-mint-backend/
-Environment="PATH=/home/ubuntu/MelodyMint/melody-mint-backend/melody-mint-backend/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-ExecStart=/home/ubuntu/MelodyMint/melody-mint-backend/melody-mint-backend/.venv/bin/python3.10 /home/ubuntu/MelodyMint/melody-mint-backend/melody-mint-backend/main.py
+WorkingDirectory=/home/ubuntu/MelodyMint/_work/melody-mint-backend/melody-mint-backend/
+Environment="PATH=/home/ubuntu/MelodyMint/_work/melody-mint-backend/melody-mint-backend/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/home/ubuntu/MelodyMint/_work/melody-mint-backend/melody-mint-backend/.venv/bin/python3.10 /home/ubuntu/MelodyMint/_work/melody-mint-backend/melody-mint-backend/main.py
 
 Restart=always
 
